@@ -607,8 +607,8 @@ public class SwarmServer {
 	    	// test for conditions that will prevent movement - too soon after last move and sitting on a rock
 	    	// treads will get stuck on rocks
 	    	if(thisRover.getRoverDrive() == RoverDriveType.TREADS
-	    			&& thisRover.getRoverLastMoveTime() + TREADS_TIME_PER_SQUARE < (System.currentTimeMillis()) 
-	    			&& planetMap.getTile(roverPos).getTerrain() != Terrain.ROCK){
+	    			&& thisRover.getRoverLastMoveTime() + TREADS_TIME_PER_SQUARE < (System.currentTimeMillis())) {
+	    			//&& planetMap.getTile(roverPos).getTerrain() != Terrain.ROCK){
 	    			    		
 	    			if(requestedMoveDir.equals("N")){
 		    		yCurrentPos = yCurrentPos - 1;
@@ -656,7 +656,7 @@ public class SwarmServer {
 	    				}
 			    		//check planetMap (immutable)
 			    		MapTile moveThere = planetMap.getTile(xCurrentPos, yCurrentPos);
-				    		if(moveThere.getTerrain() != Terrain.NONE){
+				    		if(moveThere.getTerrain() != Terrain.ROCK &&moveThere.getTerrain() != Terrain.NONE){
 					    		// Move to the new map square, unless occupied by another rover
 					    		if(roverLocations.moveRover(thisRover.getRoverName(), new Coord(xCurrentPos, yCurrentPos))){
 					    			// if moveRover call is successful then update latest move time value

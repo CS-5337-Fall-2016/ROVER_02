@@ -21,15 +21,16 @@ public class Coord {
 	
     @Override
     public int hashCode() {
-        // two randomly chosen prime numbers
-        // if deriving: appendSuper(super.hashCode()).
-        return new HashCodeBuilder(17, 31).append(xpos).append(ypos)
-                .toHashCode();
+        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
+            // if deriving: appendSuper(super.hashCode()).
+            append(xpos).
+            append(ypos).
+            toHashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Coord))
+       if (!(obj instanceof Coord))
             return false;
         if (obj == this)
             return true;
@@ -42,5 +43,5 @@ public class Coord {
 //            isEquals();
         return ((this.xpos == theOther.xpos) && (this.ypos == theOther.ypos));
     }
-
+	
 }

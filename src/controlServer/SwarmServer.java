@@ -66,17 +66,13 @@ public class SwarmServer {
     private static long countdownTimer;
     private static boolean roversAreGO;
     
-	static GUIdisplay mainPanel;
-	static MyGUIWorker myWorker;
 	
-    static GUIdisplay2 mainPanel2;
-	static MyGUIWorker2 myWorker2;
 	
 	static GUIdisplay3 mainPanel3;
 	static MyGUIWorker3 myWorker3;
     
 	// Length of time allowed for the rovers to get back to the retrieval zone
-	static final int MAXIMUM_ACTIVITY_TIME_LIMIT = 600000; // 10 Minutes = 600,000
+	static final int MAXIMUM_ACTIVITY_TIME_LIMIT = 300000; // 10 Minutes = 600,000
 	static Timer countDownTimer;
 	static long startTime;
 	
@@ -128,13 +124,7 @@ public class SwarmServer {
         scienceLocations = mapInit.getScienceLocations();
         
         countdownTimer = System.currentTimeMillis();
-        
-		mainPanel = new GUIdisplay(mapWidth, mapHeight);
-		myWorker = new MyGUIWorker(mainPanel);
-        
-       
-		mainPanel2 = new GUIdisplay2(mapWidth, mapHeight);
-		myWorker2 = new MyGUIWorker2(mainPanel2);
+     
 		
 		mainPanel3 = new GUIdisplay3(mapWidth, mapHeight, MAXIMUM_ACTIVITY_TIME_LIMIT);
 		myWorker3 = new MyGUIWorker3(mainPanel3);
@@ -822,15 +812,10 @@ public class SwarmServer {
 		String roverNumber = aRover.getRoverName().toString().substring(6);
 		// check for Blue Corp - return int 1
 		if(roverNumber.equals("01") || roverNumber.equals("02") || roverNumber.equals("03") 
-				|| roverNumber.equals("04") || roverNumber.equals("05") || roverNumber.equals("06") 
-				|| roverNumber.equals("07") || roverNumber.equals("08") || roverNumber.equals("09")){
+				|| roverNumber.equals("04") || roverNumber.equals("05") ){
 			tnum = 1;
 		
 			// check for Green Corp - return int 2
-		} else if(roverNumber.equals("10") || roverNumber.equals("11") || roverNumber.equals("12") 
-				|| roverNumber.equals("13") || roverNumber.equals("14") || roverNumber.equals("15") 
-				|| roverNumber.equals("16") || roverNumber.equals("17") || roverNumber.equals("18")){
-			tnum = 2;
 		} 
 		return tnum;
 	}

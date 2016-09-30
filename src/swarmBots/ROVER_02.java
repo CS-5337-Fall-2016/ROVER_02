@@ -42,11 +42,11 @@ public class ROVER_02 {
     private int xTile = 50;
     private int yTile = 50;
 
-    Direction currentDirection = Direction.WEST;
+    Direction currentDirection = Direction.EAST;
     Coord cc = null;
     HashSet<Coord> science_collection = new HashSet<Coord>();
     HashSet<Coord> displayed_science = new HashSet<Coord>();
-    List<Link> blue = new ArrayList<Link>();
+   
     List<Socket> sockets = new ArrayList<Socket>();
 
     // just means it did not change locations between requests, could be
@@ -69,7 +69,7 @@ public class ROVER_02 {
     public ROVER_02(String serverAddress) {
         System.out.println("ROVER_02 rover object constructed");
         rovername = "ROVER_02";
-        SERVER_ADDRESS = serverAddress;
+        SERVER_ADDRESS = "localhost";
 
         // in milliseconds - smaller is faster, but the server
         // will cut connection if it is too small
@@ -77,44 +77,11 @@ public class ROVER_02 {
 
     }
 
-    class RoverComm implements Runnable {
-
-        String ip;
-        int port;
-        Socket socket;
-
-        public RoverComm(String ip, int port) {
-            this.ip = ip;
-            this.port = port;
-        }
-
-        @Override
-        public void run() {
-            do {
-                try {
-                    socket = new Socket(ip, port);
-                } catch (UnknownHostException e) {
-                    System.out.println(e);
-                } catch (IOException e) {
-                    System.out.println(e);
-                }
-            } while (socket == null);
-            sockets.add(socket);
-            System.out
-                    .println(socket.getPort() + " " + socket.getInetAddress());
-        }
-
-    }
 
     /**
      * add all rover's ip and port number into a list so they can be connected
      */
-    public void initConnection() {
-        // dummy value # 1
-        blue.add(new Link("Dummy Group #1", "localhost", 8000));
-        // dummy value # 2
-        blue.add(new Link("Dummy Group #2", "localhost", 9000));
-    }
+    
 
     /**
      * Connects to the server then enters the processing loop.
@@ -132,11 +99,7 @@ public class ROVER_02 {
         // name
 
         // connect to all all the other rovers
-        initConnection();
-        for (Link link : blue) {
-            new Thread(new RoverComm(link.ip, link.port)).start();
-        }
-
+       
         while (true) {
             String line = in.readLine();
             if (line.startsWith("SUBMITNAME")) {
@@ -217,20 +180,7 @@ public class ROVER_02 {
 
             // ***********************************************************
             
-          move(Direction.SOUTH);
-          if(Terrain.ROCK != null && Terrain.SAND !=null)
-        	  move(Direction.EAST);
-//          else
-//        	  move(Direction.WEST);
-//              move(Direction.SOUTH);
-//              for(int xTile = 0; xTile<=7 ; xTile++){
-//            	  move(Direction.NORTH);
-//              }
-//        
-              move(Direction.NORTH);
-              
-
-            // ***************************************************
+          
 
             // another call for current location
             out.println("LOC");
@@ -393,7 +343,7 @@ public class ROVER_02 {
 
     /** determine if the rover is on ROCK NONE OR SAND */
     private boolean isBlocked(MapTile tile) {
-        List<Terrain> blockers = Arrays.asList(Terrain.ROCK, Terrain.NONE,
+        List<Terrain> blockers = Arrays.asList(Terrain.NONE,
                 Terrain.SAND);
         Terrain terrain = tile.getTerrain();
         return tile.getHasRover() || blockers.contains(terrain);
@@ -452,6 +402,7 @@ public class ROVER_02 {
     private void masterMove(Direction direction, MapTile[][] scanMapTiles,
             int centerIndex) {
         detectRadioactive(scanMapTiles);
+        
         if (isNextBlock(direction, scanMapTiles, centerIndex)) {
             Direction goodDirection = findGoodDirection(direction, scanMapTiles,
                     centerIndex);
@@ -507,6 +458,7 @@ public class ROVER_02 {
                     science_collection.add(new Coord(tileX, tileY));
                 }
             }
+            System.out.println("Radio active loc");
         }
     }
 
@@ -531,6 +483,9 @@ public class ROVER_02 {
                     }
                 displayed_science.add(c);
             }
+            System.out.print("Minerals located at ");
+           System.out.println("x cordinate "+c.xpos+" y cordinate "+c.ypos); 
+          
         }
     }
 

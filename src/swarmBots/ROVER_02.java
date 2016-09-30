@@ -122,11 +122,17 @@ public class ROVER_02 {
 
 			
 	
-	
+			boolean	goingNorth = false;
 			boolean goingSouth = false;
+			boolean goingEast = true;
+			boolean goingWest = false;
 			boolean stuck = false; // just means it did not change locations between requests,
 									// could be velocity limit or obstruction etc.
 			boolean blocked = false;
+			boolean blockedNorth = false;
+			boolean blockedSouth = false;
+			boolean blockedEast = false;
+			boolean blockedWest = false;
 	
 			String[] cardinals = new String[4];
 			cardinals[0] = "N";
@@ -194,18 +200,18 @@ public class ROVER_02 {
 	
 				
 				// ***** MOVING *****
-				// try moving east 5 block if blocked
+				// try moving east 1 block if blocked
 				if (blocked) {
-					if(stepCount > 0){
-						out.println("MOVE E");
+					//if(stepCount > 0){
+						//out.println("MOVE E");
 						//System.out.println("ROVER_02 request move E");
-						stepCount -= 1;
-					}
-					else {
-						blocked = false;
+						//stepCount -= 1;
+					//}
+					//else {
+						//blocked = false;
 						//reverses direction after being blocked and side stepping
-						goingSouth = !goingSouth;
-					}
+						//goingSouth = !goingSouth;
+					//}
 					
 //					for (int i = 0; i < 5; i++) {
 //						out.println("MOVE E");
@@ -215,7 +221,8 @@ public class ROVER_02 {
 //					blocked = false;
 //					//reverses direction after being blocked
 //					goingSouth = !goingSouth;
-				} else {
+				} 
+				else {
 	
 					// pull the MapTile array out of the ScanMap object
 					MapTile[][] scanMapTiles = scanMap.getScanMap();
@@ -229,32 +236,81 @@ public class ROVER_02 {
 								|| scanMapTiles[centerIndex][centerIndex +1].getTerrain() == Terrain.ROCK
 								|| scanMapTiles[centerIndex][centerIndex +1].getTerrain() == Terrain.SAND
 								|| scanMapTiles[centerIndex][centerIndex +1].getTerrain() == Terrain.NONE) {
-							blocked = true;
-							stepCount = 5;  //side stepping
-						} else {
+							//blocked = true;
+							stepCount = 3;  //side stepping
+							goingSouth = false;
+							goingEast = true;
+						} 
+						else if (stepCount > 0){
 							// request to server to move
 							out.println("MOVE S");
+							stepCount -= 1;
 							//System.out.println("ROVER_02 request move S");
 						}
+						else {
+							goingSouth = false;
+							goingEast = true;
+							stepCount = 3;
+						}
 						
-					} else {
+					}
 						// check scanMap to see if path is blocked to the north
 						// (scanMap may be old data by now)
 						//System.out.println("ROVER_02 scanMapTiles[2][1].getHasRover() " + scanMapTiles[2][1].getHasRover());
 						//System.out.println("ROVER_02 scanMapTiles[2][1].getTerrain() " + scanMapTiles[2][1].getTerrain().toString());
-						
+					if (goingNorth) {
 						if (scanMapTiles[centerIndex][centerIndex -1].getHasRover() 
 								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.ROCK
 								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.SAND
 								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.NONE) {
-							blocked = true;
-							stepCount = 5;  //side stepping
-						} else {
+							//blocked = true;
+							stepCount = 2;  //side stepping
+						} 
+						else {
 							// request to server to move
 							out.println("MOVE N");
 							//System.out.println("ROVER_02 request move N");
-						}					
+						}
 					}
+						
+					if (goingEast) {
+						if (scanMapTiles[centerIndex][centerIndex -1].getHasRover() 
+								|| scanMapTiles[centerIndex + 1][centerIndex].getTerrain() == Terrain.ROCK
+								|| scanMapTiles[centerIndex + 1][centerIndex].getTerrain() == Terrain.SAND
+								|| scanMapTiles[centerIndex + 1][centerIndex].getTerrain() == Terrain.NONE) {
+							//blocked = true;
+							stepCount = 2;  //side stepping
+							goingEast = false;
+							goingSouth = true;
+						} 
+						else if (stepCount > 0) {
+							// request to server to move
+							out.println("MOVE E");
+							stepCount -= 1;
+							//System.out.println("ROVER_02 request move E");
+						}
+						else {
+							goingEast = false;
+							goingSouth = true;
+							stepCount = 2;
+						}
+					}
+						
+					if (goingWest) {
+						if (scanMapTiles[centerIndex][centerIndex -1].getHasRover() 
+								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.ROCK
+								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.SAND
+								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.NONE) {
+							//blocked = true;
+							stepCount = 2;  //side stepping
+						} 
+						else {
+							// request to server to move
+							out.println("MOVE W");
+							//System.out.println("ROVER_02 request move W");
+						}
+					}
+											
 				}
 	
 				// another call for current location

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Ignore everything
 *
 
@@ -22,3 +23,29 @@
 !*.txt
 
 #but do ignore this file
+=======
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+
+!src
+!src/
+!src/*
+!src/**
+
+!libs
+!libs/
+!libs/*
+!libs/**
+
+!Maps
+!Maps/
+!Maps/*
+!Maps/**
+
+!*.txt
+
+#but do ignore this file
+>>>>>>> e8eb1f44fda3cde8b26ea1f5809df084d0c46fe1

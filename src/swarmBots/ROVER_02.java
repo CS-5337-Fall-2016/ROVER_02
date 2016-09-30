@@ -1,15 +1,36 @@
 package swarmBots;
 
 import java.io.BufferedReader;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.lang.reflect.Type;
+import java.net.Socket;
+import java.util.ArrayList;
+>>>>>>> e8eb1f44fda3cde8b26ea1f5809df084d0c46fe1
+>>>>>>> b349cc8295343bc1226cc3eb8bc1c3c7e0b8fd9f
+>>>>>>> 2af07f9905004dbe7d00512811ff97e7e65652cd
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -19,8 +40,17 @@ import com.google.gson.reflect.TypeToken;
 import common.Coord;
 import common.MapTile;
 import common.ScanMap;
+
 import enums.Direction;
 import enums.Science;
+
+
+import enums.Direction;
+import enums.Science;
+
+import enums.Direction;
+import enums.Science;
+
 import enums.Terrain;
 
 /**
@@ -31,8 +61,16 @@ import enums.Terrain;
 
 public class ROVER_02 {
 
+
     BufferedReader in;
     PrintWriter out;
+
+    BufferedReader in;
+    PrintWriter out;
+
+    BufferedReader in;
+    PrintStream out;
+
     String rovername;
     ScanMap scanMap;
     int sleepTime;
@@ -42,11 +80,22 @@ public class ROVER_02 {
     private int xTile = 50;
     private int yTile = 50;
 
+
     Direction currentDirection = Direction.EAST;
     Coord cc = null;
     HashSet<Coord> science_collection = new HashSet<Coord>();
     HashSet<Coord> displayed_science = new HashSet<Coord>();
    
+
+    Direction currentDirection = Direction.WEST;
+
+    Direction currentDirection = Direction.EAST;
+
+    Coord cc = null;
+    HashSet<Coord> science_collection = new HashSet<Coord>();
+    HashSet<Coord> displayed_science = new HashSet<Coord>();
+    List<Link> blue = new ArrayList<Link>();
+
     List<Socket> sockets = new ArrayList<Socket>();
 
     // just means it did not change locations between requests, could be
@@ -69,7 +118,13 @@ public class ROVER_02 {
     public ROVER_02(String serverAddress) {
         System.out.println("ROVER_02 rover object constructed");
         rovername = "ROVER_02";
+
         SERVER_ADDRESS = "localhost";
+
+        SERVER_ADDRESS = serverAddress;
+
+        SERVER_ADDRESS = "localhost";
+
 
         // in milliseconds - smaller is faster, but the server
         // will cut connection if it is too small
@@ -78,10 +133,47 @@ public class ROVER_02 {
     }
 
 
+    class RoverComm implements Runnable {
+
+        String ip;
+        int port;
+        Socket socket;
+
+        public RoverComm(String ip, int port) {
+            this.ip = ip;
+            this.port = port;
+        }
+
+        @Override
+        public void run() {
+            do {
+                try {
+                    socket = new Socket(ip, port);
+                } catch (UnknownHostException e) {
+                    System.out.println(e);
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
+            } while (socket == null);
+            sockets.add(socket);
+            System.out
+                    .println(socket.getPort() + " " + socket.getInetAddress());
+        }
+
+    }
+
+
     /**
      * add all rover's ip and port number into a list so they can be connected
      */
-    
+
+    public void initConnection() {
+        // dummy value # 1
+        blue.add(new Link("Dummy Group #1", "localhost", 8000));
+        // dummy value # 2
+        blue.add(new Link("Dummy Group #2", "localhost", 9000));
+    }
+
 
     /**
      * Connects to the server then enters the processing loop.
@@ -91,7 +183,13 @@ public class ROVER_02 {
         // Make connection and initialize streams
         Socket socket = new Socket(SERVER_ADDRESS, PORT_ADDRESS);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
         out = new PrintWriter(socket.getOutputStream(), true);
+
+        out = new PrintWriter(socket.getOutputStream(), true);
+
+        out = new PrintStream(socket.getOutputStream());
+
 
         // Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -99,7 +197,13 @@ public class ROVER_02 {
         // name
 
         // connect to all all the other rovers
-       
+
+        initConnection();
+        for (Link link : blue) {
+            new Thread(new RoverComm(link.ip, link.port)).start();
+        }
+
+>>>>>>> 2af07f9905004dbe7d00512811ff97e7e65652cd
         while (true) {
             String line = in.readLine();
             if (line.startsWith("SUBMITNAME")) {
@@ -172,6 +276,7 @@ public class ROVER_02 {
 
             // ***************************************************
 
+
             masterMove(currentDirection, scanMapTiles, centerIndex);
             shareScience();
             
@@ -179,8 +284,32 @@ public class ROVER_02 {
             
 
             // ***********************************************************
+
+          move(Direction.SOUTH);
+          if(Terrain.ROCK != null && Terrain.SAND !=null)
+        	  move(Direction.EAST);
+//          else
+//        	  move(Direction.WEST);
+//              move(Direction.SOUTH);
+//              for(int xTile = 0; xTile<=7 ; xTile++){
+//            	  move(Direction.NORTH);
+//              }
+//        
+              move(Direction.NORTH);
+              
+
+            // ***************************************************
+=======
+           /* move(Direction.EAST);
+            move(Direction.SOUTH);*/
+            masterMove(currentDirection, scanMapTiles, centerIndex);
+            System.out.println("master move");
+            shareScience();
             
-          
+            System.out.println("sharing science");
+            
+>>>>>>> b349cc8295343bc1226cc3eb8bc1c3c7e0b8fd9f
+>>>>>>> 2af07f9905004dbe7d00512811ff97e7e65652cd
 
             // another call for current location
             out.println("LOC");
@@ -201,7 +330,17 @@ public class ROVER_02 {
             stuck = currentLoc.equals(previousLoc);
 
             // System.out.println("ROVER_02 stuck test " + stuck);
+
             System.out.println("ROVER_02 blocked test " + blocked);
+
+            System.out.println("ROVER_02 blocked test " + blocked);
+
+            if(stuck){
+            System.out.println("ROVER_02 blocked test " + blocked);
+            
+            }
+>>>>>>> b349cc8295343bc1226cc3eb8bc1c3c7e0b8fd9f
+>>>>>>> 2af07f9905004dbe7d00512811ff97e7e65652cd
 
             // TODO - logic to calculate where to move next
 
@@ -297,6 +436,7 @@ public class ROVER_02 {
         // System.out.println("ROVER_02 finished scan while");
 
         String jsonScanMapString = jsonScanMap.toString();
+
         // debug print json object to a file
         // new MyWriter( jsonScanMapString, 0); //gives a strange result -
         // prints the \n instead of newline character in the file
@@ -304,6 +444,7 @@ public class ROVER_02 {
         // System.out.println("ROVER_02 convert from json back to ScanMap
         // class");
         // convert from the json string back to a ScanMap object
+
         scanMap = gson.fromJson(jsonScanMapString, ScanMap.class);
     }
 
@@ -326,8 +467,18 @@ public class ROVER_02 {
     public boolean isNextBlock(Direction direction, MapTile[][] scanMapTiles,
             int centerIndex) {
 
+
         switch (direction) {
         case NORTH:
+
+
+        switch (direction) {
+        case NORTH:
+
+System.out.println("blocked");
+        switch (direction) {
+        case NORTH:
+
             return isBlocked(scanMapTiles[centerIndex][centerIndex - 1]);
         case SOUTH:
             return isBlocked(scanMapTiles[centerIndex][centerIndex + 1]);
@@ -343,7 +494,14 @@ public class ROVER_02 {
 
     /** determine if the rover is on ROCK NONE OR SAND */
     private boolean isBlocked(MapTile tile) {
+
         List<Terrain> blockers = Arrays.asList(Terrain.NONE,
+
+        List<Terrain> blockers = Arrays.asList(Terrain.ROCK, Terrain.NONE,
+=======
+        List<Terrain> blockers = Arrays.asList(Terrain.NONE,
+>>>>>>> b349cc8295343bc1226cc3eb8bc1c3c7e0b8fd9f
+>>>>>>> 2af07f9905004dbe7d00512811ff97e7e65652cd
                 Terrain.SAND);
         Terrain terrain = tile.getTerrain();
         return tile.getHasRover() || blockers.contains(terrain);
@@ -383,7 +541,14 @@ public class ROVER_02 {
         }
     }
 
+<<<<<<< HEAD
     
+=======
+    /**
+     * recursively call itself until it find a direction that won't lead to a
+     * blocked path
+     */
+>>>>>>> 2af07f9905004dbe7d00512811ff97e7e65652cd
     private Direction findGoodDirection(Direction direction,
             MapTile[][] scanMapTiles, int centerIndex) {
 
@@ -399,19 +564,33 @@ public class ROVER_02 {
     private void masterMove(Direction direction, MapTile[][] scanMapTiles,
             int centerIndex) {
         detectRadioactive(scanMapTiles);
-        
+ 
         if (isNextBlock(direction, scanMapTiles, centerIndex)) {
             Direction goodDirection = findGoodDirection(direction, scanMapTiles,
                     centerIndex);
             if (isNextEdge(direction, scanMapTiles, centerIndex)) {
                 currentDirection = findGoodDirection(direction, scanMapTiles,
                         centerIndex);
+
                 move(currentDirection);
             } else {
+
+                move(currentDirection);
+            } else {
+
+                System.out.println("CurrentDirection : "+currentDirection);
+                move(currentDirection);
+            } else {
+            	System.out.println("GoodDirection : "+goodDirection);
+>>>>>>> b349cc8295343bc1226cc3eb8bc1c3c7e0b8fd9f
+>>>>>>> 2af07f9905004dbe7d00512811ff97e7e65652cd
                 move(goodDirection);
             }
 
         } else {
+
+        	System.out.println("Direction : "+direction);
+
             move(direction);
         }
     }
@@ -455,7 +634,9 @@ public class ROVER_02 {
                     science_collection.add(new Coord(tileX, tileY));
                 }
             }
+
             System.out.println("Radio active loc");
+
         }
     }
 
@@ -480,10 +661,18 @@ public class ROVER_02 {
                     }
                 displayed_science.add(c);
             }
+
             System.out.print("Minerals located at ");
            System.out.println("x cordinate "+c.xpos+" y cordinate "+c.ypos); 
           
         }
+
+        }
+
+            System.out.println("x : "+c.xpos+" y : "+c.ypos);
+        }
+       
+
     }
 
     /**
@@ -500,4 +689,465 @@ public class ROVER_02 {
         }
     }
 
+
+	BufferedReader in;
+	PrintWriter out;
+	String rovername;
+	ScanMap scanMap;
+	int sleepTime;
+	String SERVER_ADDRESS = "localhost";
+	static final int PORT_ADDRESS = 9537;
+
+	public ROVER_02() {
+		// constructor
+		System.out.println("ROVER_02 rover object constructed");
+		rovername = "ROVER_02";
+		SERVER_ADDRESS = "localhost";
+		// this should be a safe but slow timer value
+		sleepTime = 300; // in milliseconds - smaller is faster, but the server will cut connection if it is too small
+	}
+	
+	public ROVER_02(String serverAddress) {
+		// constructor
+		System.out.println("ROVER_02 rover object constructed");
+		rovername = "ROVER_02";
+		SERVER_ADDRESS = serverAddress;
+		sleepTime = 200; // in milliseconds - smaller is faster, but the server will cut connection if it is too small
+	}
+
+	/**
+	 * Connects to the server then enters the processing loop.
+	 */
+	private void run() throws IOException, InterruptedException {
+
+		// Make connection to SwarmServer and initialize streams
+		Socket socket = null;
+		try {
+			socket = new Socket(SERVER_ADDRESS, PORT_ADDRESS);
+
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			out = new PrintWriter(socket.getOutputStream(), true);
+			
+	
+			// Process all messages from server, wait until server requests Rover ID
+			// name - Return Rover Name to complete connection
+			while (true) {
+				String line = in.readLine();
+				if (line.startsWith("SUBMITNAME")) {
+					out.println(rovername); // This sets the name of this instance
+											// of a swarmBot for identifying the
+											// thread to the server
+					break;
+				}
+			}
+	
+			
+			// ********* Rover logic setup *********
+			
+			String line = "";
+			Coord rovergroupStartPosition = null;
+			Coord targetLocation = null;
+			
+			/**
+			 *  Get initial values that won't change
+			 */
+			// **** get equipment listing ****			
+			ArrayList<String> equipment = new ArrayList<String>();
+			equipment = getEquipment();
+			System.out.println(rovername + " equipment list results " + equipment + "\n");
+			
+			
+			// **** Request START_LOC Location from SwarmServer ****
+			out.println("START_LOC");
+			line = in.readLine();
+            if (line == null) {
+            	System.out.println(rovername + " check connection to server");
+            	line = "";
+            }
+			if (line.startsWith("START_LOC")) {
+				rovergroupStartPosition = extractLocationFromString(line);
+			}
+			System.out.println(rovername + " START_LOC " + rovergroupStartPosition);
+			
+			
+			// **** Request TARGET_LOC Location from SwarmServer ****
+			out.println("TARGET_LOC");
+			line = in.readLine();
+            if (line == null) {
+            	System.out.println(rovername + " check connection to server");
+            	line = "";
+            }
+			if (line.startsWith("TARGET_LOC")) {
+				targetLocation = extractLocationFromString(line);
+			}
+			System.out.println(rovername + " TARGET_LOC " + targetLocation);
+			
+			
+
+			
+	
+			boolean	goingNorth = false;
+			boolean goingSouth = false;
+			boolean goingEast = true;
+			boolean goingWest = false;
+			boolean stuck = false; // just means it did not change locations between requests,
+									// could be velocity limit or obstruction etc.
+			boolean blocked = false;
+			boolean blockedNorth = false;
+			boolean blockedSouth = false;
+			boolean blockedEast = false;
+			boolean blockedWest = false;
+	
+			String[] cardinals = new String[4];
+			cardinals[0] = "N";
+			cardinals[1] = "E";
+			cardinals[2] = "S";
+			cardinals[3] = "W";
+	
+			String currentDir = cardinals[0];
+			Coord currentLoc = null;
+			Coord previousLoc = null;
+			int stepCount = 0;
+	
+
+			/**
+			 *  ####  Rover controller process loop  ####
+			 */
+			while (true) {
+	
+				
+				// **** Request Rover Location from SwarmServer ****
+				out.println("LOC");
+				line = in.readLine();
+	            if (line == null) {
+	            	System.out.println(rovername + " check connection to server");
+	            	line = "";
+	            }
+				if (line.startsWith("LOC")) {
+					// loc = line.substring(4);
+					currentLoc = extractLocationFromString(line);
+					
+				}
+				System.out.println(rovername + " currentLoc at start: " + currentLoc);
+				
+				// after getting location set previous equal current to be able to check for stuckness and blocked later
+				previousLoc = currentLoc;		
+				
+				
+
+				
+		
+	
+				// ***** do a SCAN *****
+
+				// gets the scanMap from the server based on the Rover current location
+				doScan(); 
+				// prints the scanMap to the Console output for debug purposes
+				scanMap.debugPrintMap();
+				
+		
+				
+				
+				// ***** get TIMER remaining *****
+				out.println("TIMER");
+				line = in.readLine();
+	            if (line == null) {
+	            	System.out.println(rovername + " check connection to server");
+	            	line = "";
+	            }
+				if (line.startsWith("TIMER")) {
+					String timeRemaining = line.substring(6);
+					System.out.println(rovername + " timeRemaining: " + timeRemaining);
+				}
+				
+				
+	
+				
+				// ***** MOVING *****
+				// try moving east 1 block if blocked
+				if (blocked) {
+					//if(stepCount > 0){
+						//out.println("MOVE E");
+						//System.out.println("ROVER_02 request move E");
+						//stepCount -= 1;
+					//}
+					//else {
+						//blocked = false;
+						//reverses direction after being blocked and side stepping
+						//goingSouth = !goingSouth;
+					//}
+					
+//					for (int i = 0; i < 5; i++) {
+//						out.println("MOVE E");
+//						//System.out.println("ROVER_02 request move E");
+//						Thread.sleep(300);
+//					}
+//					blocked = false;
+//					//reverses direction after being blocked
+//					goingSouth = !goingSouth;
+				} 
+				else {
+	
+					// pull the MapTile array out of the ScanMap object
+					MapTile[][] scanMapTiles = scanMap.getScanMap();
+					int centerIndex = (scanMap.getEdgeSize() - 1)/2;
+					// tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
+	
+					if (goingSouth) {
+						// check scanMap to see if path is blocked to the south
+						// (scanMap may be old data by now)
+						if (scanMapTiles[centerIndex][centerIndex +1].getHasRover() 
+								|| scanMapTiles[centerIndex][centerIndex +1].getTerrain() == Terrain.ROCK
+								|| scanMapTiles[centerIndex][centerIndex +1].getTerrain() == Terrain.SAND
+								|| scanMapTiles[centerIndex][centerIndex +1].getTerrain() == Terrain.NONE) {
+							//blocked = true;
+							stepCount = 3;  //side stepping
+							goingSouth = false;
+							goingEast = true;
+						} 
+						else if (stepCount > 0){
+							// request to server to move
+							out.println("MOVE S");
+							stepCount -= 1;
+							//System.out.println("ROVER_02 request move S");
+						}
+						else {
+							goingSouth = false;
+							goingEast = true;
+							stepCount = 3;
+						}
+						
+					}
+						// check scanMap to see if path is blocked to the north
+						// (scanMap may be old data by now)
+						//System.out.println("ROVER_02 scanMapTiles[2][1].getHasRover() " + scanMapTiles[2][1].getHasRover());
+						//System.out.println("ROVER_02 scanMapTiles[2][1].getTerrain() " + scanMapTiles[2][1].getTerrain().toString());
+					if (goingNorth) {
+						if (scanMapTiles[centerIndex][centerIndex -1].getHasRover() 
+								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.ROCK
+								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.SAND
+								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.NONE) {
+							//blocked = true;
+							stepCount = 2;  //side stepping
+						} 
+						else {
+							// request to server to move
+							out.println("MOVE N");
+							//System.out.println("ROVER_02 request move N");
+						}
+					}
+						
+					if (goingEast) {
+						if (scanMapTiles[centerIndex][centerIndex -1].getHasRover() 
+								|| scanMapTiles[centerIndex + 1][centerIndex].getTerrain() == Terrain.ROCK
+								|| scanMapTiles[centerIndex + 1][centerIndex].getTerrain() == Terrain.SAND
+								|| scanMapTiles[centerIndex + 1][centerIndex].getTerrain() == Terrain.NONE) {
+							//blocked = true;
+							stepCount = 2;  //side stepping
+							goingEast = false;
+							goingSouth = true;
+						} 
+						else if (stepCount > 0) {
+							// request to server to move
+							out.println("MOVE E");
+							stepCount -= 1;
+							//System.out.println("ROVER_02 request move E");
+						}
+						else {
+							goingEast = false;
+							goingSouth = true;
+							stepCount = 2;
+						}
+					}
+						
+					if (goingWest) {
+						if (scanMapTiles[centerIndex][centerIndex -1].getHasRover() 
+								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.ROCK
+								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.SAND
+								|| scanMapTiles[centerIndex][centerIndex -1].getTerrain() == Terrain.NONE) {
+							//blocked = true;
+							stepCount = 2;  //side stepping
+						} 
+						else {
+							// request to server to move
+							out.println("MOVE W");
+							//System.out.println("ROVER_02 request move W");
+						}
+					}
+											
+				}
+	
+				// another call for current location
+				out.println("LOC");
+				line = in.readLine();
+				if(line == null){
+					System.out.println("ROVER_02 check connection to server");
+					line = "";
+				}
+				if (line.startsWith("LOC")) {
+					currentLoc = extractLocationFromString(line);
+					
+				}
+	
+	
+				// test for stuckness
+				stuck = currentLoc.equals(previousLoc);
+	
+				//System.out.println("ROVER_02 stuck test " + stuck);
+				System.out.println("ROVER_02 blocked test " + blocked);
+	
+				// TODO - logic to calculate where to move next
+	
+				
+				// this is the Rovers HeartBeat, it regulates how fast the Rover cycles through the control loop
+				Thread.sleep(sleepTime);
+				
+				System.out.println("ROVER_02 ------------ bottom process control --------------"); 
+			}
+		
+		// This catch block closes the open socket connection to the server
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+	        if (socket != null) {
+	            try {
+	            	socket.close();
+	            } catch (IOException e) {
+	            	System.out.println("ROVER_02 problem closing socket");
+	            }
+	        }
+	    }
+
+	} // END of Rover main control loop
+	
+	// ####################### Support Methods #############################
+	
+	private void clearReadLineBuffer() throws IOException{
+		while(in.ready()){
+			//System.out.println("ROVER_02 clearing readLine()");
+			in.readLine();	
+		}
+	}
+	
+
+	// method to retrieve a list of the rover's EQUIPMENT from the server
+	private ArrayList<String> getEquipment() throws IOException {
+		//System.out.println("ROVER_02 method getEquipment()");
+		Gson gson = new GsonBuilder()
+    			.setPrettyPrinting()
+    			.enableComplexMapKeySerialization()
+    			.create();
+		out.println("EQUIPMENT");
+		
+		String jsonEqListIn = in.readLine(); //grabs the string that was returned first
+		if(jsonEqListIn == null){
+			jsonEqListIn = "";
+		}
+		StringBuilder jsonEqList = new StringBuilder();
+		//System.out.println("ROVER_02 incomming EQUIPMENT result - first readline: " + jsonEqListIn);
+		
+		if(jsonEqListIn.startsWith("EQUIPMENT")){
+			while (!(jsonEqListIn = in.readLine()).equals("EQUIPMENT_END")) {
+				if(jsonEqListIn == null){
+					break;
+				}
+				//System.out.println("ROVER_02 incomming EQUIPMENT result: " + jsonEqListIn);
+				jsonEqList.append(jsonEqListIn);
+				jsonEqList.append("\n");
+				//System.out.println("ROVER_02 doScan() bottom of while");
+			}
+		} else {
+			// in case the server call gives unexpected results
+			clearReadLineBuffer();
+			return null; // server response did not start with "EQUIPMENT"
+		}
+		
+		String jsonEqListString = jsonEqList.toString();		
+		ArrayList<String> returnList;		
+		returnList = gson.fromJson(jsonEqListString, new TypeToken<ArrayList<String>>(){}.getType());		
+		//System.out.println("ROVER_02 returnList " + returnList);
+		
+		return returnList;
+	}
+	
+
+	// sends a SCAN request to the server and puts the result in the scanMap array
+	public void doScan() throws IOException {
+		//System.out.println("ROVER_02 method doScan()");
+		Gson gson = new GsonBuilder()
+    			.setPrettyPrinting()
+    			.enableComplexMapKeySerialization()
+    			.create();
+		out.println("SCAN");
+
+		String jsonScanMapIn = in.readLine(); //grabs the string that was returned first
+		if(jsonScanMapIn == null){
+			System.out.println("ROVER_02 check connection to server");
+			jsonScanMapIn = "";
+		}
+		StringBuilder jsonScanMap = new StringBuilder();
+		System.out.println("ROVER_02 incomming SCAN result - first readline: " + jsonScanMapIn);
+		
+		if(jsonScanMapIn.startsWith("SCAN")){	
+			while (!(jsonScanMapIn = in.readLine()).equals("SCAN_END")) {
+				//System.out.println("ROVER_02 incomming SCAN result: " + jsonScanMapIn);
+				jsonScanMap.append(jsonScanMapIn);
+				jsonScanMap.append("\n");
+				//System.out.println("ROVER_02 doScan() bottom of while");
+			}
+		} else {
+			// in case the server call gives unexpected results
+			clearReadLineBuffer();
+			return; // server response did not start with "SCAN"
+		}
+		//System.out.println("ROVER_02 finished scan while");
+
+		String jsonScanMapString = jsonScanMap.toString();
+		// debug print json object to a file
+		//new MyWriter( jsonScanMapString, 0);  //gives a strange result - prints the \n instead of newline character in the file
+
+		//System.out.println("ROVER_02 convert from json back to ScanMap class");
+		// convert from the json string back to a ScanMap object
+		scanMap = gson.fromJson(jsonScanMapString, ScanMap.class);		
+	}
+	
+
+	// this takes the server response string, parses out the x and x values and
+	// returns a Coord object	
+	public static Coord extractLocationFromString(String sStr) {
+		int indexOf;
+		indexOf = sStr.indexOf(" ");
+		sStr = sStr.substring(indexOf +1);
+		if (sStr.lastIndexOf(" ") != -1) {
+			String xStr = sStr.substring(0, sStr.lastIndexOf(" "));
+			//System.out.println("extracted xStr " + xStr);
+
+			String yStr = sStr.substring(sStr.lastIndexOf(" ") + 1);
+			//System.out.println("extracted yStr " + yStr);
+			return new Coord(Integer.parseInt(xStr), Integer.parseInt(yStr));
+		}
+		return null;
+	}
+	
+
+	/**
+	 * Runs the client
+	 */
+	public static void main(String[] args) throws Exception {
+		ROVER_02 client;
+    	// if a command line argument is included it is used as the map filename
+		// if present uses an IP address instead of localhost 
+		
+		if(!(args.length == 0)){
+			client = new ROVER_02(args[0]);
+		} else {
+			client = new ROVER_02();
+		}
+		
+		client.run();
+	}
+>>>>>>> e8eb1f44fda3cde8b26ea1f5809df084d0c46fe1
+>>>>>>> b349cc8295343bc1226cc3eb8bc1c3c7e0b8fd9f
+>>>>>>> 2af07f9905004dbe7d00512811ff97e7e65652cd
 }

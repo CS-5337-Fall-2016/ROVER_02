@@ -383,10 +383,7 @@ public class ROVER_02 {
         }
     }
 
-    /**
-     * recursively call itself until it find a direction that won't lead to a
-     * blocked path
-     */
+    
     private Direction findGoodDirection(Direction direction,
             MapTile[][] scanMapTiles, int centerIndex) {
 

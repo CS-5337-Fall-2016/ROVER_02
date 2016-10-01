@@ -42,7 +42,7 @@ public class ROVER_02 {
     private int xTile = 50;
     private int yTile = 50;
 
-    Direction currentDirection = Direction.WEST;
+    Direction currentDirection = Direction.SOUTH;
     Coord cc = null;
     HashSet<Coord> science_collection = new HashSet<Coord>();
     HashSet<Coord> displayed_science = new HashSet<Coord>();
@@ -191,6 +191,7 @@ public class ROVER_02 {
             // System.out.println("ROVER_02 sending SCAN request");
             this.doScan();
             scanMap.debugPrintMap();
+this.Gather();
 
             // ***** MOVING *****
 
@@ -209,17 +210,7 @@ public class ROVER_02 {
 
             // ***********************************************************
             
-          move(Direction.SOUTH);
-          if(Terrain.ROCK != null && Terrain.SAND !=null)
-        	  move(Direction.EAST);
-//          else
-//        	  move(Direction.WEST);
-//              move(Direction.SOUTH);
-//              for(int xTile = 0; xTile<=7 ; xTile++){
-//            	  move(Direction.NORTH);
-//              }
-//        
-              move(Direction.NORTH);
+         
               
 
             // ***************************************************
@@ -256,7 +247,11 @@ public class ROVER_02 {
     }
 
     // ################ Support Methods ###########################
-
+public void Gather(){
+	 out.println("GATHER");
+	
+	
+}
     private void clearReadLineBuffer() throws IOException {
         while (in.ready()) {
             // System.out.println("ROVER_02 clearing readLine()");
@@ -355,10 +350,11 @@ public class ROVER_02 {
         sStr = sStr.substring(4);
         if (sStr.lastIndexOf(" ") != -1) {
             String xStr = sStr.substring(0, sStr.lastIndexOf(" "));
-            // System.out.println("extracted xStr " + xStr);
+             System.out.println("extracted xStr " + xStr);
 
             String yStr = sStr.substring(sStr.lastIndexOf(" ") + 1);
-            // System.out.println("extracted yStr " + yStr);
+            System.out.println("extracted yStr " + yStr);
+            
             return new Coord(Integer.parseInt(xStr), Integer.parseInt(yStr));
         }
         return null;
@@ -385,7 +381,7 @@ public class ROVER_02 {
 
     /** determine if the rover is on ROCK NONE OR SAND */
     private boolean isBlocked(MapTile tile) {
-        List<Terrain> blockers = Arrays.asList(Terrain.ROCK, Terrain.NONE,
+        List<Terrain> blockers = Arrays.asList(Terrain.NONE,
                 Terrain.SAND);
         Terrain terrain = tile.getTerrain();
         return tile.getHasRover() || blockers.contains(terrain);
@@ -523,6 +519,8 @@ public class ROVER_02 {
                     }
                 displayed_science.add(c);
             }
+            System.out.println("Minerals located at");
+            System.out.println("x cord"+c.xpos); System.out.println("y cord"+c.ypos);
         }
     }
 
@@ -536,7 +534,7 @@ public class ROVER_02 {
             new ROVER_02().run();
         } else {
             System.out.println(2);
-            new ROVER_02(args[0]).run();
+            new ROVER_02("localhost").run();
         }
     }
 

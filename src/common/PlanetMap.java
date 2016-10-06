@@ -1,5 +1,6 @@
 package common;
 
+
 public class PlanetMap {
 	private MapTile[][] planetMap;
 	// width is number of columns is xloc, height is number of rows is yloc
@@ -187,3 +188,4 @@ public class PlanetMap {
 		this.planetMap[3][3] = new MapTile("S");
 	}
 }
+

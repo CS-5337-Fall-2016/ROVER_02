@@ -1,3 +1,5 @@
+
+
 package rover_logic;
 
 import common.Coord;
@@ -58,5 +60,6 @@ public class Node implements Comparable<Node> {
         str += "coord: " + coord + ", data: " + data;
         return str;
     }
+
 
 }

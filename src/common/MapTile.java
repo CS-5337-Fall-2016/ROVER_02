@@ -1,3 +1,5 @@
+
+
 package common;
 
 import enums.RoverName;
@@ -86,3 +88,4 @@ public class MapTile {
 		this.science = sci;
 	}
 }
+

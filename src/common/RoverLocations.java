@@ -107,3 +107,4 @@ public class RoverLocations {
 		roverHash.put(RoverName.ROVER_99, new Coord(4,7));
 	}
 }
+

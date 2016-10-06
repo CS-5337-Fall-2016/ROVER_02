@@ -1,3 +1,4 @@
+
 package enums;
 
 public enum RoverToolType {
@@ -47,3 +48,4 @@ public enum RoverToolType {
     	return output;
     }
 }
+

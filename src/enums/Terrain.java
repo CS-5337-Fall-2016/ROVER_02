@@ -1,3 +1,4 @@
+
 package enums;
 
 public enum Terrain {
@@ -47,3 +48,4 @@ public enum Terrain {
     	return output;
     }
 }
+

@@ -1,13 +1,8 @@
 package enums;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-// thank you to this post: http://stackoverflow.com/questions/3054247/how-to-define-properties-for-enum-items
-
-// Sensors: RADIATION_SENSOR->Radioactivescience; CHEMICAL_SENSOR->Organic Science;
-//	SPECTRAL_SENSOR->Crystal Science; RADAR_SENSOR  ->mineral Science
 
 public enum RoverName {
 	// (Drive type, accessory slot 1, accessory slot 2)
@@ -130,3 +125,4 @@ public enum RoverName {
     	return output;
     }
 }
+

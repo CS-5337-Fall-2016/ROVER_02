@@ -9,8 +9,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,9 +47,9 @@ public class ROVER_02 {
 
     Direction currentDirection = Direction.SOUTH;
     Coord cc = null;
-    HashSet<Coord> science_collection = new HashSet<Coord>();
-    HashSet<Coord> displayed_science = new HashSet<Coord>();
-   
+    HashSet<Coord> science_collection = new HashSet<Coord>(); //Science collected by the rover and the coords of extraction
+    HashSet<Coord> displayed_science = new HashSet<Coord>(); //Science found by the rover
+    HashMap<Coord, MapTile> explored_map = new HashMap<Coord, MapTile>(); //Map explored by the rover
     List<Socket> sockets = new ArrayList<Socket>();
 
     // just means it did not change locations between requests, could be
@@ -191,13 +194,20 @@ public class ROVER_02 {
             // System.out.println("ROVER_02 sending SCAN request");
             this.doScan();
             scanMap.debugPrintMap();
-this.Gather();
+            this.Gather();
 
             // ***** MOVING *****
 
             // pull the MapTile array out of the ScanMap object
             MapTile[][] scanMapTiles = scanMap.getScanMap();
             int centerIndex = (scanMap.getEdgeSize() - 1) / 2;
+            addScanMap(scanMapTiles, cc, scanMap.getEdgeSize());
+            Iterator it = explored_map.entrySet().iterator();
+            while(it.hasNext()) {
+            	Map.Entry pair = (Map.Entry)it.next();
+                System.out.println(pair.getKey().toString() + " = " + ((MapTile) pair.getValue()).getTerrain().getTerString());
+                it.remove();
+            }
             // tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
 
             // ***************************************************
@@ -247,11 +257,11 @@ this.Gather();
     }
 
     // ################ Support Methods ###########################
-public void Gather(){
-	 out.println("GATHER");
+    public void Gather(){
+    	out.println("GATHER");
 	
 	
-}
+    }
     private void clearReadLineBuffer() throws IOException {
         while (in.ready()) {
             // System.out.println("ROVER_02 clearing readLine()");
@@ -349,8 +359,8 @@ public void Gather(){
     public static Coord extractLOC(String sStr) {
         sStr = sStr.substring(4);
         if (sStr.lastIndexOf(" ") != -1) {
-            String xStr = sStr.substring(0, sStr.lastIndexOf(" "));
-             System.out.println("extracted xStr " + xStr);
+        	String xStr = sStr.substring(0, sStr.lastIndexOf(" "));
+            System.out.println("extracted xStr " + xStr);
 
             String yStr = sStr.substring(sStr.lastIndexOf(" ") + 1);
             System.out.println("extracted yStr " + yStr);
@@ -522,6 +532,16 @@ public void Gather(){
             System.out.println("Minerals located at");
             System.out.println("x cord"+c.xpos); System.out.println("y cord"+c.ypos);
         }
+    }
+    
+    public void addScanMap(MapTile[][] m, Coord c, int edgeSize) {
+    	int cornX = c.xpos - 3;
+		int cornY = c.ypos - 3;
+		for (int i = 0; i < edgeSize; i++) {
+			for (int j = 0; j < edgeSize; j++) {
+				explored_map.put(new Coord(cornX + j, cornY + i), m[j][i]);
+			}
+		}
     }
 
     /**

@@ -1,8 +1,5 @@
 # Ignore everything
 *
-/*
-/*/
-!/bin/
 
 # But not these files...
 !.gitignore
@@ -21,9 +18,7 @@
 !Maps/
 !Maps/*
 !Maps/**
-!*.txt
 
-# MAC HIDDEN FILES
-.DS_Store
+!*.txt
 
 #but do ignore this file

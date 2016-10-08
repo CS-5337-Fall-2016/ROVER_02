@@ -1,5 +1,8 @@
 # Ignore everything
 *
+/*
+/*/
+!/bin/
 
 # But not these files...
 !.gitignore
@@ -18,7 +21,6 @@
 !Maps/
 !Maps/*
 !Maps/**
-/.settings
 !*.txt
 
 # MAC HIDDEN FILES

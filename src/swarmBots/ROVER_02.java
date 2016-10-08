@@ -78,7 +78,7 @@ public class ROVER_02 {
 	
 			
 			// ********* Rover logic setup *********
-			// int cnt=0;
+			
 			String line = "";
 
 			boolean goingSouth = false;

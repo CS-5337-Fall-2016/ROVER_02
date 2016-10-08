@@ -1,8 +1,4 @@
-
 package common;
-
-
-
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,6 +31,8 @@ public class Communication {
         this.corp_secret = corp_secret;
 
     }
+    
+    
 
     public String postScanMapTiles(Coord currentLoc, MapTile[][] scanMapTiles) {
         JSONArray data = convertScanMapTiles(currentLoc, scanMapTiles);
@@ -207,4 +205,3 @@ public class Communication {
     }
 
 }
-

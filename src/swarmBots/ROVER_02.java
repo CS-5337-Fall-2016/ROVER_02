@@ -15,16 +15,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import common.Communication;
 import common.Coord;
 import common.MapTile;
 import common.ScanMap;
 import enums.Direction;
 import enums.Science;
 import enums.Terrain;
+import supportTools.CommunicationHelper;
 
 /**
  * The seed that this program is built on is a chat program example found here:
@@ -41,15 +46,14 @@ public class ROVER_02 {
     int sleepTime;
     String SERVER_ADDRESS = "localhost";
     static final int PORT_ADDRESS = 9537;
-    private int totalTiles = 2500;
-    private int xTile = 50;
-    private int yTile = 50;
-
+    
     Direction currentDirection = Direction.SOUTH;
     Coord cc = null;
     HashSet<Coord> science_collection = new HashSet<Coord>(); //Science collected by the rover and the coords of extraction
     HashSet<Coord> displayed_science = new HashSet<Coord>(); //Science found by the rover
-    HashMap<Coord, MapTile> explored_map = new HashMap<Coord, MapTile>(); //Map explored by the rover
+    public static Map<Coord, MapTile> globalMap;
+    List<Coord> destinations;
+    long trafficCounter;
     List<Socket> sockets = new ArrayList<Socket>();
 
     // just means it did not change locations between requests, could be
@@ -58,25 +62,26 @@ public class ROVER_02 {
     boolean blocked = false;
 
     public ROVER_02() {
+    	// constructor
         System.out.println("ROVER_02 rover object constructed");
         rovername = "ROVER_02";
         SERVER_ADDRESS = "localhost";
 
         // this should be a safe but slow timer value
-        // in milliseconds - smaller is faster, but the server
-        // will cut connection if it is too small
-        sleepTime = 300;
+        sleepTime = 300; // in milliseconds - smaller is faster, but the server will cut connection if it is too small
+        globalMap = new HashMap<>();
+        destinations = new ArrayList<>();
 
     }
 
     public ROVER_02(String serverAddress) {
+    	// constructor
         System.out.println("ROVER_02 rover object constructed");
         rovername = "ROVER_02";
         SERVER_ADDRESS = serverAddress;
-
-        // in milliseconds - smaller is faster, but the server
-        // will cut connection if it is too small
-        sleepTime = 200;
+        sleepTime = 300; // in milliseconds - smaller is faster, but the server will cut connection if it is too small
+        globalMap = new HashMap<>();
+        destinations = new ArrayList<>();
 
     }
 
@@ -130,7 +135,6 @@ public class ROVER_02 {
         // name
 
         // connect to all all the other rovers
-        
 
         while (true) {
             String line = in.readLine();
@@ -163,7 +167,7 @@ public class ROVER_02 {
             // currently the requirements allow sensor calls to be made with no
             // simulated resource cost
 
-            // **** location call ****
+            // **** Request START_LOC Location from SwarmServer ****
             out.println("LOC");
             line = in.readLine();
             if (line == null) {
@@ -190,26 +194,34 @@ public class ROVER_02 {
             System.out.println(
                     "ROVER_02 equipment list results " + equipment + "\n");
 
+            // ******** Communication ********
+            String url = "http://localhost:3000/api";
+            String corp_secret = "gz5YhL70a2";
+            
+            Communication com = new Communication(url, rovername, corp_secret);
+            
             // ***** do a SCAN *****
             // System.out.println("ROVER_02 sending SCAN request");
             this.doScan();
             scanMap.debugPrintMap();
+            
+            // upon scan, update my field map
+            MapTile[][] scanMapTiles = scanMap.getScanMap();
+            int centerIndex = (scanMap.getEdgeSize() - 1) / 2;
+            updateglobalMap(currentLoc, scanMapTiles);
+            
+            //***** communicating with the server
+            System.out.println("post message: " + com.postScanMapTiles(currentLoc, scanMapTiles));
+            if (trafficCounter % 5 == 0) {
+                updateglobalMap(com.getGlobalMap());
+
+            }
+            trafficCounter++;
+            
             this.Gather();
 
             // ***** MOVING *****
-
-            // pull the MapTile array out of the ScanMap object
-            MapTile[][] scanMapTiles = scanMap.getScanMap();
-            int centerIndex = (scanMap.getEdgeSize() - 1) / 2;
-            addScanMap(scanMapTiles, cc, scanMap.getEdgeSize());
-            Iterator it = explored_map.entrySet().iterator();
-            while(it.hasNext()) {
-            	Map.Entry pair = (Map.Entry)it.next();
-                System.out.println(pair.getKey().toString() + " = " + ((MapTile) pair.getValue()).getTerrain().getTerString());
-                it.remove();
-            }
             // tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
-
             // ***************************************************
 
             masterMove(currentDirection, scanMapTiles, centerIndex);
@@ -254,6 +266,54 @@ public class ROVER_02 {
                     "ROVER_02 ------------ bottom process control --------------");
         }
 
+    }
+    
+    private void updateglobalMap(Coord currentLoc, MapTile[][] scanMapTiles) {
+        int centerIndex = (scanMap.getEdgeSize() - 1) / 2;
+
+        for (int row = 0; row < scanMapTiles.length; row++) {
+            for (int col = 0; col < scanMapTiles[row].length; col++) {
+
+                MapTile mapTile = scanMapTiles[col][row];
+
+                int xp = currentLoc.xpos - centerIndex + col;
+                int yp = currentLoc.ypos - centerIndex + row;
+                Coord coord = new Coord(xp, yp);
+                globalMap.put(coord, mapTile);
+            }
+        }
+        // put my current position so it is walkable
+        MapTile currentMapTile = scanMapTiles[centerIndex][centerIndex].getCopyOfMapTile();
+        currentMapTile.setHasRoverFalse();
+        globalMap.put(currentLoc, currentMapTile);
+    }
+    
+    // get data from server and update field map
+    private void updateglobalMap(JSONArray data) {
+
+        for (Object o : data) {
+
+            JSONObject jsonObj = (JSONObject) o;
+            boolean marked = (jsonObj.get("g") != null) ? true : false;
+            int x = (int) (long) jsonObj.get("x");
+            int y = (int) (long) jsonObj.get("y");
+            Coord coord = new Coord(x, y);
+
+            // only bother to save if our globalMap doesn't contain the coordinate
+            if (!globalMap.containsKey(coord)) {
+                MapTile tile = CommunicationHelper.convertToMapTile(jsonObj);
+
+                // if tile has science AND is not in sand
+                if (tile.getScience() != Science.NONE && tile.getTerrain() != Terrain.SAND) {
+
+                    // then add to the destination
+                    if (!destinations.contains(coord) && !marked)
+                        destinations.add(coord);
+                }
+
+                globalMap.put(coord, tile);
+            }
+        }
     }
 
     // ################ Support Methods ###########################
@@ -532,16 +592,6 @@ public class ROVER_02 {
             System.out.println("Minerals located at");
             System.out.println("x cord"+c.xpos); System.out.println("y cord"+c.ypos);
         }
-    }
-    
-    public void addScanMap(MapTile[][] m, Coord c, int edgeSize) {
-    	int cornX = c.xpos - 3;
-		int cornY = c.ypos - 3;
-		for (int i = 0; i < edgeSize; i++) {
-			for (int j = 0; j < edgeSize; j++) {
-				explored_map.put(new Coord(cornX + j, cornY + i), m[j][i]);
-			}
-		}
     }
 
     /**

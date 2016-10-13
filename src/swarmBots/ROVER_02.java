@@ -85,35 +85,6 @@ public class ROVER_02 {
 
     }
 
-    class RoverComm implements Runnable {
-
-        String ip;
-        int port;
-        Socket socket;
-
-        public RoverComm(String ip, int port) {
-            this.ip = ip;
-            this.port = port;
-        }
-
-        @Override
-        public void run() {
-            do {
-                try {
-                    socket = new Socket(ip, port);
-                } catch (UnknownHostException e) {
-                    System.out.println(e);
-                } catch (IOException e) {
-                    System.out.println(e);
-                }
-            } while (socket == null);
-            sockets.add(socket);
-            System.out
-                    .println(socket.getPort() + " " + socket.getInetAddress());
-        }
-
-    }
-
     /**
      * add all rover's ip and port number into a list so they can be connected
      */

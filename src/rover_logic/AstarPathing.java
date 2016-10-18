@@ -4,33 +4,36 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import common.Coord;
 import common.MapTile;
 import enums.Terrain;
-import rover_logic.Node;
+import rover_logic.NodeA;
 
 public class AstarPathing {
-	Map<Coord, MapTile> globalMap;
-	NodeA currLOC;
-	NodeA target;
-	List<NodeA> openList;
-	List<NodeA> closedList;
+	private Map<Coord, MapTile> globalMap;
+	private NodeA currLOC;
+	private NodeA startLOC;
+	private NodeA target;
+	private List<NodeA> openList;
+	private List<NodeA> closedList;
 
 	public AstarPathing(Map<Coord, MapTile> globalMapIn, Coord currLOCIn, Coord targetIn) {
 		globalMap = globalMapIn;
 		currLOC = new NodeA(currLOCIn, createScore(currLOCIn));
+		startLOC = currLOC;
 		target = new NodeA(targetIn);
 	}
 	
-	public void findPath() {
+	public Stack<String> findPath() {
 		this.openList.add(currLOC);
 		while(!(openList.isEmpty())) {
 			this.currLOC = findLowestCost(openList);
 			openList.remove(currLOC);
 			closedList.add(currLOC);
 			if (currLOC.equals(target)) {
-				//return path
+				return createPath(target);
 			}
 			List<NodeA> adjList = this.getAdjacentCoordinates(currLOC, globalMap);
 			for (NodeA na : adjList) {
@@ -47,6 +50,7 @@ public class AstarPathing {
 				
 			}
 		}
+		return null; //this code reachable when there are no paths to the target
 	}
 	
 	//Method to get all adjacent coordinates
@@ -98,6 +102,16 @@ public class AstarPathing {
 		MapTile m = globalMap.get(c);
 		return walls.contains(m.getTerrain()) || m.getHasRover();
 			
+	}
+	
+	public Stack<String> createPath(NodeA dest) {
+		Stack<String> path = new Stack<String>();
+		NodeA currNode = dest;
+		while (!(currNode.equals(startLOC))) {
+			path.push(currNode.getDirection());
+			currNode = currNode.getParent();
+		}
+		return path;
 	}
 	
 	

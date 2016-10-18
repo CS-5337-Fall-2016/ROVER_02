@@ -22,30 +22,38 @@ public class AstarPathing {
 		globalMap = globalMapIn;
 		currLOC = currLOCIn;
 		target = targetIn;
+	}
+	
+	public void findPath() {
 		this.openList.add(this.currLOC);
-		List<Node> nodeList = new ArrayList<Node>(); //List that will have coordinates and data
-		while (true) { //infinite loop, fix later
-			this.currLOC = this.findLowestCost(nodeList);
+		while(!(openList.isEmpty())) {
+			this.currLOC = findLowestCost(openList);
 			openList.remove(currLOC);
 			closedList.add(currLOC);
 			if (currLOC.equals(target)) {
 				//return path
 			}
-			openList.addAll(this.getAdjacentCoordinates(currLOC, globalMap));
-			
+			List<Coord> adjList = this.getAdjacentCoordinates(currLOC, globalMap);
+			for (Coord c : adjList) {
+				if (openList.contains(c) && )
+				if (closedList.contains(c) || this.isBlocked(c)) {
+					continue;
+				}
+				if (!(openList.contains(c)) && !(closedList.contains(c))) {
+					//compute score, set parent
+					openList.add(c);
+				}
+				else {
+					
+				}
+				
+			}
 		}
-		
 	}
 	
 	public List<Coord> getPath() {
 		return this.path;
 	}
-	
-	public double getDistance(Coord current, Coord dest) {
-        double dx = current.xpos - dest.xpos;
-        double dy = current.ypos - dest.ypos;
-        return Math.sqrt((dx * dx) + (dy * dy)) * 100;
-    }
 	
 	//Method to get all adjacent coordinates
 	public List<Coord> getAdjacentCoordinates(Coord curr, Map<Coord, MapTile> global) {
@@ -66,23 +74,28 @@ public class AstarPathing {
         adjList.add(w);
         adjList.add(s);
         adjList.add(n);
-        for(int i = 0; i < adjList.size(); i++) {
-        	if (isBlocked(adjList.get(i))) {
-        		adjList.remove(adjList.get(i)); //issue with adjList.size() when removing
+        for (Coord c : adjList) {
+        	if (isBlocked(c)) {
+        		adjList.remove(c);
         	}
         }
-
         return adjList;
     }
 	
-	public Coord findLowestCost(List<Node> nodes) {
-		Node low = nodes.get(0);
-		for (int i = 0; i < nodes.size(); i++) {
-			if (low.getData() > nodes.get(i).getData()) {
-				low = nodes.get(i);
+	public Coord findLowestCost(List<Coord> cl) {
+		Coord lowCoord = cl.get(0);
+		for (Coord c: cl) {
+			if (getScore(lowCoord) > getScore(c)) {
+				lowCoord = c;
 			}
 		}
-		return low.getCoord();
+		return lowCoord;
+	}
+	
+	public double getScore(Coord c) {
+		double dx = Math.abs(target.xpos - c.xpos);
+		double dy = Math.abs(target.ypos - c.ypos);
+		return dx + dy;
 	}
 	
 	public boolean isBlocked(Coord c) {

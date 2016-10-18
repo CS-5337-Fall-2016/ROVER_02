@@ -12,20 +12,19 @@ import rover_logic.Node;
 
 public class AstarPathing {
 	Map<Coord, MapTile> globalMap;
-	Coord currLOC;
-	Coord target;
-	List<Coord> openList;
-	List<Coord> closedList;
-	List<Coord> path;
+	NodeA currLOC;
+	NodeA target;
+	List<NodeA> openList;
+	List<NodeA> closedList;
 
 	public AstarPathing(Map<Coord, MapTile> globalMapIn, Coord currLOCIn, Coord targetIn) {
 		globalMap = globalMapIn;
-		currLOC = currLOCIn;
-		target = targetIn;
+		currLOC = new NodeA(currLOCIn, createScore(currLOCIn));
+		target = new NodeA(targetIn);
 	}
 	
 	public void findPath() {
-		this.openList.add(this.currLOC);
+		this.openList.add(currLOC);
 		while(!(openList.isEmpty())) {
 			this.currLOC = findLowestCost(openList);
 			openList.remove(currLOC);
@@ -33,31 +32,27 @@ public class AstarPathing {
 			if (currLOC.equals(target)) {
 				//return path
 			}
-			List<Coord> adjList = this.getAdjacentCoordinates(currLOC, globalMap);
-			for (Coord c : adjList) {
-				if (openList.contains(c) && )
-				if (closedList.contains(c) || this.isBlocked(c)) {
-					continue;
-				}
-				if (!(openList.contains(c)) && !(closedList.contains(c))) {
-					//compute score, set parent
-					openList.add(c);
-				}
-				else {
+			List<NodeA> adjList = this.getAdjacentCoordinates(currLOC, globalMap);
+			for (NodeA na : adjList) {
+				if (openList.contains(na) && na.getScore() < currLOC.getScore()) {
 					
+				}
+				if (closedList.contains(na) && na.getScore() < currLOC.getScore()) {
+					
+				}
+				if (!(openList.contains(na)) && !(closedList.contains(na))) {
+					
+					openList.add(na);
 				}
 				
 			}
 		}
 	}
 	
-	public List<Coord> getPath() {
-		return this.path;
-	}
-	
 	//Method to get all adjacent coordinates
-	public List<Coord> getAdjacentCoordinates(Coord curr, Map<Coord, MapTile> global) {
-        List<Coord> adjList = new ArrayList<>();
+	public List<NodeA> getAdjacentCoordinates(NodeA node, Map<Coord, MapTile> global) {
+        List<NodeA> adjList = new ArrayList<>();
+        Coord curr = node.getCoord();
 
         // coordinates
         int west = curr.xpos - 1;
@@ -70,31 +65,31 @@ public class AstarPathing {
         Coord w = new Coord(west, curr.ypos); // W
         Coord n = new Coord(curr.xpos, north); // N
 
-        adjList.add(e);
-        adjList.add(w);
-        adjList.add(s);
-        adjList.add(n);
-        for (Coord c : adjList) {
-        	if (isBlocked(c)) {
-        		adjList.remove(c);
+        adjList.add(new NodeA(e));
+        adjList.add(new NodeA(w));
+        adjList.add(new NodeA(s));
+        adjList.add(new NodeA(n));
+        for (NodeA na : adjList) {
+        	if (isBlocked(na.getCoord())) {
+        		adjList.remove(na);
         	}
         }
         return adjList;
     }
 	
-	public Coord findLowestCost(List<Coord> cl) {
-		Coord lowCoord = cl.get(0);
-		for (Coord c: cl) {
-			if (getScore(lowCoord) > getScore(c)) {
-				lowCoord = c;
+	public NodeA findLowestCost(List<NodeA> nodeList) {
+		NodeA lowNode = nodeList.get(0);
+		for (NodeA n: nodeList) {
+			if (n.getScore() < lowNode.getScore() ) {
+				lowNode = n;
 			}
 		}
-		return lowCoord;
+		return lowNode;
 	}
 	
-	public double getScore(Coord c) {
-		double dx = Math.abs(target.xpos - c.xpos);
-		double dy = Math.abs(target.ypos - c.ypos);
+	public double createScore(Coord c) {
+		double dx = Math.abs(target.getCoord().xpos - c.xpos);
+		double dy = Math.abs(target.getCoord().ypos - c.ypos);
 		return dx + dy;
 	}
 	

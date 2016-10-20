@@ -31,11 +31,12 @@ public class AstarPathing {
 	}
 
 	public Stack<Direction> findPath() {
-		int moveCost = 0;
+		double moveCost = 0;
 		this.openList.add(this.currLOC);
 		while (!(this.openList.isEmpty())) {
 			moveCost += 1;
 			this.currLOC = findLowestCost(this.openList);
+			System.out.println("Add" + currLOC.getCoord().toString() + currLOC.getScore());
 			this.openList.remove(this.currLOC);
 			this.closedList.add(this.currLOC);
 			if (this.currLOC.equals(this.target)) {
@@ -44,14 +45,7 @@ public class AstarPathing {
 			List<NodeA> adjList = this.getAdjacentCoordinates(this.currLOC, moveCost);
 			for (int na = 0; na < adjList.size(); na++) {
 				if (!(this.closedList.contains(na))) {
-
-					if (this.isBlocked(adjList.get(na).getCoord())) {
-						adjList.get(na).setScore(adjList.get(na).getScore() + 10000);
-					} else {
-						adjList.get(na).setScore(adjList.get(na).getScore() + moveCost);
-					}
 					if (!(this.openList.contains(adjList.get(na)))) {
-						adjList.get(na).setScore(createScore(adjList.get(na).getCoord()));
 						adjList.get(na).setParent(this.currLOC);
 						this.openList.add(adjList.get(na));
 					}
@@ -63,7 +57,7 @@ public class AstarPathing {
 	}
 
 	// Method to get all adjacent coordinates
-	public List<NodeA> getAdjacentCoordinates(NodeA node, int add) {
+	public List<NodeA> getAdjacentCoordinates(NodeA node, double add) {
 		List<NodeA> adjList = new ArrayList<>();
 		Coord curr = node.getCoord();
 
@@ -110,9 +104,15 @@ public class AstarPathing {
 	}
 
 	public boolean isBlocked(Coord c) {
-		List<Terrain> walls = Arrays.asList(Terrain.NONE, Terrain.SAND);
-		MapTile m = this.globalMap.get(c);
-		return walls.contains(m.getTerrain()) || m.getHasRover();
+		try {
+			List<Terrain> walls = Arrays.asList(Terrain.NONE, Terrain.SAND);
+			MapTile m = this.globalMap.get(c);
+			return walls.contains(m.getTerrain()) || m.getHasRover();
+		}
+		catch (Exception e){
+			return true;
+		}
+		
 
 	}
 

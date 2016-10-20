@@ -1,9 +1,11 @@
 package rover_logic;
 
+import java.util.Arrays;
+
 import common.Coord;
 
 // Node class for Astar search
-public class NodeA implements Comparable<Node> {
+public class NodeA implements Comparable<NodeA> {
     private Coord coord;
     private double score;
     private NodeA parent;
@@ -58,8 +60,34 @@ public class NodeA implements Comparable<Node> {
     }
 
 	@Override
-	public int compareTo(Node o) {
+	public int compareTo(NodeA o) {
+		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	public String getDirection() {
+		int xpos = this.parent.getCoord().xpos - this.coord.xpos;
+		int ypos = this.parent.getCoord().ypos - this.coord.ypos;
+		int[] diff = {xpos, ypos};
+		int[] N = {0, -1};
+		int[] S = {0, 1};
+		int[] E = {1, 0};
+		int[] W = {-1, 0};
+		if (Arrays.equals(diff, N)) {
+			return "MOVE N";
+		}
+		else if(Arrays.equals(diff, S)) {
+			return "MOVE S";
+		}
+		else if(Arrays.equals(diff, E)) {
+			return "MOVE E";
+		}
+		else if(Arrays.equals(diff, W)) {
+			return "MOVE W";
+		}
+		else {
+			return null;
+		}
 	}
 
 

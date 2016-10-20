@@ -4,47 +4,53 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import common.Coord;
 import common.MapTile;
 import enums.Terrain;
-import rover_logic.Node;
+import rover_logic.NodeA;
 
 public class AstarPathing {
 	private Map<Coord, MapTile> globalMap;
 	private NodeA currLOC;
+	private NodeA startLOC;
 	private NodeA target;
 	private List<NodeA> openList;
 	private List<NodeA> closedList;
 
 	public AstarPathing(Map<Coord, MapTile> globalMapIn, Coord currLOCIn, Coord targetIn) {
-		this.globalMap = globalMapIn;
-		this.currLOC = new NodeA(currLOCIn, createScore(currLOCIn));
-		this.target = new NodeA(targetIn);
+		globalMap = globalMapIn;
+		currLOC = new NodeA(currLOCIn, createScore(currLOCIn));
+		startLOC = currLOC;
+		target = new NodeA(targetIn);
 	}
 	
-	public void findPath() {
-		this.openList.add(this.currLOC);
-		while(!(this.openList.isEmpty())) {
-			this.currLOC = findLowestCost(this.openList);
-			this.openList.remove(this.currLOC);
-			this.closedList.add(this.currLOC);
-			if (this.currLOC.equals(this.target)) {
-				//return path
+	public Stack<String> findPath() {
+		this.openList.add(currLOC);
+		while(!(openList.isEmpty())) {
+			this.currLOC = findLowestCost(openList);
+			openList.remove(currLOC);
+			closedList.add(currLOC);
+			if (currLOC.equals(target)) {
+				return createPath(target);
 			}
-			List<NodeA> adjList = this.getAdjacentCoordinates(this.currLOC, this.globalMap);
+			List<NodeA> adjList = this.getAdjacentCoordinates(currLOC, globalMap);
 			for (NodeA na : adjList) {
-				if (this.closedList.contains(na)) {
-					continue;
+				if (openList.contains(na) && na.getScore() < currLOC.getScore()) {
+					
 				}
-				if (!(this.openList.contains(na)) || na.getScore() < this.currLOC.getScore()) {	
-					na.setScore(createScore(na.getCoord()));
-					na.setParent(this.currLOC);
-					this.openList.add(na);
+				if (closedList.contains(na) && na.getScore() < currLOC.getScore()) {
+					
+				}
+				if (!(openList.contains(na)) && !(closedList.contains(na))) {
+					
+					openList.add(na);
 				}
 				
 			}
 		}
+		return null; //this code reachable when there are no paths to the target
 	}
 	
 	//Method to get all adjacent coordinates
@@ -85,17 +91,27 @@ public class AstarPathing {
 		return lowNode;
 	}
 	
-	private double createScore(Coord c) {
+	public double createScore(Coord c) {
 		double dx = Math.abs(target.getCoord().xpos - c.xpos);
 		double dy = Math.abs(target.getCoord().ypos - c.ypos);
 		return dx + dy;
 	}
 	
-	private boolean isBlocked(Coord c) {
+	public boolean isBlocked(Coord c) {
 		List<Terrain> walls = Arrays.asList(Terrain.NONE, Terrain.SAND);
 		MapTile m = globalMap.get(c);
 		return walls.contains(m.getTerrain()) || m.getHasRover();
 			
+	}
+	
+	public Stack<String> createPath(NodeA dest) {
+		Stack<String> path = new Stack<String>();
+		NodeA currNode = dest;
+		while (!(currNode.equals(startLOC))) {
+			path.push(currNode.getDirection());
+			currNode = currNode.getParent();
+		}
+		return path;
 	}
 	
 	

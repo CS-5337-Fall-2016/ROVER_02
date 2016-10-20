@@ -1,4 +1,3 @@
-
 package enums;
 
 public enum Science {
@@ -48,4 +47,3 @@ public enum Science {
     	return output;
     }
 }
-

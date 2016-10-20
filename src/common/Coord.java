@@ -1,4 +1,3 @@
-
 package common;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -46,4 +45,3 @@ public class Coord {
     }
 	
 }
-

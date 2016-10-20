@@ -1,4 +1,3 @@
-
 package common;
 
 import java.awt.Color;
@@ -19,12 +18,3 @@ public class LineSegment {
 		this.lineColor = color;
 	}
 }
-
-
-
-
-
-
-
-
-

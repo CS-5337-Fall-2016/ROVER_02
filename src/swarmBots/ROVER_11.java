@@ -1,40 +1,4 @@
 package swarmBots;
-import java.io.BufferedReader;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.lang.reflect.Type;
-import java.net.Socket;
-import java.util.ArrayList;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -45,21 +9,29 @@ import common.Coord;
 import common.MapTile;
 import common.ScanMap;
 
-import enums.Direction;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import enums.RoverDriveType;
 import enums.Science;
-
-
-import enums.Direction;
-import enums.Science;
-
-import enums.Direction;
-import enums.Science;
-
 import enums.Terrain;
 import rover_logic.SearchLogic;
 import supportTools.CommunicationHelper;
 
+/**
+ * Created by samskim on 4/21/16.
+ */
 public class ROVER_11 {
 
     BufferedReader in;
@@ -579,4 +551,3 @@ public class ROVER_11 {
 
 
 }
-

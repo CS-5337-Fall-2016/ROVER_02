@@ -1,4 +1,3 @@
-
 package enums;
 
 public enum RoverDriveType {
@@ -28,4 +27,3 @@ public enum RoverDriveType {
     	return output;
     }
 }
-

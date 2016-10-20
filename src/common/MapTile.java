@@ -82,7 +82,7 @@ public class MapTile {
 		this.hasRover = false;
 	}
 	
-	public void setScience(Science sci){
+	public void setSciecne(Science sci){
 		this.science = sci;
 	}
 }

@@ -11,38 +11,36 @@ import enums.Terrain;
 import rover_logic.Node;
 
 public class AstarPathing {
-	Map<Coord, MapTile> globalMap;
-	NodeA currLOC;
-	NodeA target;
-	List<NodeA> openList;
-	List<NodeA> closedList;
+	private Map<Coord, MapTile> globalMap;
+	private NodeA currLOC;
+	private NodeA target;
+	private List<NodeA> openList;
+	private List<NodeA> closedList;
 
 	public AstarPathing(Map<Coord, MapTile> globalMapIn, Coord currLOCIn, Coord targetIn) {
-		globalMap = globalMapIn;
-		currLOC = new NodeA(currLOCIn, createScore(currLOCIn));
-		target = new NodeA(targetIn);
+		this.globalMap = globalMapIn;
+		this.currLOC = new NodeA(currLOCIn, createScore(currLOCIn));
+		this.target = new NodeA(targetIn);
 	}
 	
 	public void findPath() {
-		this.openList.add(currLOC);
-		while(!(openList.isEmpty())) {
-			this.currLOC = findLowestCost(openList);
-			openList.remove(currLOC);
-			closedList.add(currLOC);
-			if (currLOC.equals(target)) {
+		this.openList.add(this.currLOC);
+		while(!(this.openList.isEmpty())) {
+			this.currLOC = findLowestCost(this.openList);
+			this.openList.remove(this.currLOC);
+			this.closedList.add(this.currLOC);
+			if (this.currLOC.equals(this.target)) {
 				//return path
 			}
-			List<NodeA> adjList = this.getAdjacentCoordinates(currLOC, globalMap);
+			List<NodeA> adjList = this.getAdjacentCoordinates(this.currLOC, this.globalMap);
 			for (NodeA na : adjList) {
-				if (openList.contains(na) && na.getScore() < currLOC.getScore()) {
-					
+				if (this.closedList.contains(na)) {
+					continue;
 				}
-				if (closedList.contains(na) && na.getScore() < currLOC.getScore()) {
-					
-				}
-				if (!(openList.contains(na)) && !(closedList.contains(na))) {
-					
-					openList.add(na);
+				if (!(this.openList.contains(na)) || na.getScore() < this.currLOC.getScore()) {	
+					na.setScore(createScore(na.getCoord()));
+					na.setParent(this.currLOC);
+					this.openList.add(na);
 				}
 				
 			}
@@ -87,13 +85,13 @@ public class AstarPathing {
 		return lowNode;
 	}
 	
-	public double createScore(Coord c) {
+	private double createScore(Coord c) {
 		double dx = Math.abs(target.getCoord().xpos - c.xpos);
 		double dy = Math.abs(target.getCoord().ypos - c.ypos);
 		return dx + dy;
 	}
 	
-	public boolean isBlocked(Coord c) {
+	private boolean isBlocked(Coord c) {
 		List<Terrain> walls = Arrays.asList(Terrain.NONE, Terrain.SAND);
 		MapTile m = globalMap.get(c);
 		return walls.contains(m.getTerrain()) || m.getHasRover();

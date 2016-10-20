@@ -3,6 +3,7 @@ package rover_logic;
 import java.util.Arrays;
 
 import common.Coord;
+import enums.Direction;
 
 // Node class for Astar search
 public class NodeA implements Comparable<NodeA> {
@@ -13,6 +14,7 @@ public class NodeA implements Comparable<NodeA> {
     public NodeA(Coord coord) {
         this.coord = coord;
     }
+    
     public NodeA(Coord coord, double score) {
         this.coord = coord;
         this.score = score;
@@ -65,25 +67,25 @@ public class NodeA implements Comparable<NodeA> {
 		return 0;
 	}
 	
-	public String getDirection() {
-		int xpos = this.parent.getCoord().xpos - this.coord.xpos;
-		int ypos = this.parent.getCoord().ypos - this.coord.ypos;
+	public Direction getDirection() {
+		int xpos = this.coord.xpos - this.parent.getCoord().xpos;
+		int ypos = this.coord.ypos - this.parent.getCoord().ypos;
 		int[] diff = {xpos, ypos};
-		int[] N = {0, -1};
-		int[] S = {0, 1};
-		int[] E = {1, 0};
-		int[] W = {-1, 0};
+		int[] N = {0, 1};
+		int[] S = {0, -1};
+		int[] E = {-1, 0};
+		int[] W = {1, 0};
 		if (Arrays.equals(diff, N)) {
-			return "MOVE N";
+			return Direction.NORTH;
 		}
 		else if(Arrays.equals(diff, S)) {
-			return "MOVE S";
+			return Direction.SOUTH;
 		}
 		else if(Arrays.equals(diff, E)) {
-			return "MOVE E";
+			return Direction.EAST;
 		}
 		else if(Arrays.equals(diff, W)) {
-			return "MOVE W";
+			return Direction.WEST;
 		}
 		else {
 			return null;

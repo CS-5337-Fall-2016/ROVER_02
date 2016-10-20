@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -29,6 +30,7 @@ import common.ScanMap;
 import enums.Direction;
 import enums.Science;
 import enums.Terrain;
+import rover_logic.AstarPathing;
 import supportTools.CommunicationHelper;
 
 /**
@@ -47,10 +49,8 @@ public class ROVER_02 {
     String SERVER_ADDRESS = "localhost";
     static final int PORT_ADDRESS = 9537;
     
-    Direction currentDirection = Direction.SOUTH;
-    Coord cc = null;
     HashSet<Coord> science_collection = new HashSet<Coord>(); //Science collected by the rover and the coords of extraction
-    HashSet<Coord> displayed_science = new HashSet<Coord>(); //Science found by the rover
+    Stack<Direction> currPath = new Stack<Direction>();
     public static Map<Coord, MapTile> globalMap;
     List<Coord> destinations;
     long trafficCounter;
@@ -219,7 +219,14 @@ public class ROVER_02 {
 
             // ********** MOVING **********
             // tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
-            masterMove(currentDirection, scanMapTiles, centerIndex);
+            if (currPath.isEmpty()) {
+            	AstarPathing ap = new AstarPathing(globalMap, currentLoc, targetLocation);
+            	currPath = ap.findPath();
+            }
+            else {
+            	System.out.print(currPath.peek());
+            	move(currPath.pop());
+            }
             
             
             // another call for current location
@@ -489,27 +496,6 @@ public class ROVER_02 {
     /** determine if the tile is NONE */
     private boolean isNone(MapTile tile) {
         return tile.getTerrain() == Terrain.NONE;
-    }
-
-    /**
-     * write to each rover the coords of a tile that contains radiation. will
-     * only write to them if the coords haven't is new.
-     */
-    public void shareScience() {
-        for (Coord c : science_collection) {
-            if (!displayed_science.contains(c)) {
-                for (Socket s : sockets)
-                    try {
-                        new DataOutputStream(s.getOutputStream())
-                                .writeBytes(c.toString() + "\r\n");
-                    } catch (Exception e) {
-
-                    }
-                displayed_science.add(c);
-            }
-            System.out.println("Minerals located at");
-            System.out.println("x cord"+c.xpos); System.out.println("y cord"+c.ypos);
-        }
     }
     
     public static Coord extractLocationFromString(String sStr) {

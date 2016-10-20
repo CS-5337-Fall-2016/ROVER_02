@@ -20,34 +20,31 @@ public class AstarPathing {
 	private List<NodeA> closedList;
 
 	public AstarPathing(Map<Coord, MapTile> globalMapIn, Coord currLOCIn, Coord targetIn) {
-		globalMap = globalMapIn;
-		currLOC = new NodeA(currLOCIn, createScore(currLOCIn));
-		startLOC = currLOC;
-		target = new NodeA(targetIn);
+		this.globalMap = globalMapIn;
+		this.currLOC = new NodeA(currLOCIn, createScore(currLOCIn));
+		this.startLOC = currLOC;
+		this.target = new NodeA(targetIn);
 	}
 	
 	public Stack<String> findPath() {
-		this.openList.add(currLOC);
-		while(!(openList.isEmpty())) {
-			this.currLOC = findLowestCost(openList);
-			openList.remove(currLOC);
-			closedList.add(currLOC);
-			if (currLOC.equals(target)) {
-				return createPath(target);
+		this.openList.add(this.currLOC);
+		while(!(this.openList.isEmpty())) {
+			this.currLOC = findLowestCost(this.openList);
+			this.openList.remove(this.currLOC);
+			this.closedList.add(this.currLOC);
+			if (this.currLOC.equals(this.target)) {
+				return createPath(this.target);
 			}
-			List<NodeA> adjList = this.getAdjacentCoordinates(currLOC, globalMap);
+			List<NodeA> adjList = this.getAdjacentCoordinates(this.currLOC, this.globalMap);
 			for (NodeA na : adjList) {
-				if (openList.contains(na) && na.getScore() < currLOC.getScore()) {
-					
+				if (this.closedList.contains(na)) {
+					continue;
 				}
-				if (closedList.contains(na) && na.getScore() < currLOC.getScore()) {
-					
+				if (!(this.openList.contains(na)) || na.getScore() < this.currLOC.getScore()) {	
+					na.setScore(createScore(na.getCoord()));
+					na.setParent(this.currLOC);
+					this.openList.add(na);
 				}
-				if (!(openList.contains(na)) && !(closedList.contains(na))) {
-					
-					openList.add(na);
-				}
-				
 			}
 		}
 		return null; //this code reachable when there are no paths to the target

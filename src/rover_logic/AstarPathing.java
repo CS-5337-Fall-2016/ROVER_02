@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
-
 import common.Coord;
 import common.MapTile;
-import enums.Direction;
 import enums.Terrain;
 import rover_logic.NodeA;
 
@@ -30,7 +27,7 @@ public class AstarPathing {
 
 	}
 
-	public Stack<Direction> findPath() {
+	public List<String> findPath() {
 		double moveCost = 0;
 		this.openList.add(this.currLOC);
 		while (!(this.openList.isEmpty())) {
@@ -116,14 +113,16 @@ public class AstarPathing {
 
 	}
 
-	public Stack<Direction> createPath(NodeA dest) {
-		Stack<Direction> path = new Stack<Direction>();
+	public List<String> createPath(NodeA dest) {
+		List<String> path = new ArrayList<String>();
 		NodeA currNode = dest;
 		while (!currNode.equals(startLOC)) {
-			path.push(currNode.getDirection());
+			path.add(currNode.getDirection());
 			currNode = currNode.getParent();
-			System.out.println("Moving Backwards" + currNode.getCoord().toString() + currNode.getScore());
+			//System.out.println("Moving Backwards" + currNode.getCoord().toString());
 		}
+		//System.out.println("Size of List: " + path.size());
+
 		return path;
 	}
 

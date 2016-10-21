@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -47,7 +49,7 @@ public class ROVER_02 {
     static final int PORT_ADDRESS = 9537;
     
     HashSet<Coord> science_collection = new HashSet<Coord>(); //Science collected by the rover and the coords of extraction
-    List<String> currPath = new ArrayList<String>();
+    Stack<Direction> currPath = new Stack<Direction>();
     public static Map<Coord, MapTile> globalMap;
     List<Coord> destinations;
     long trafficCounter;
@@ -217,20 +219,22 @@ public class ROVER_02 {
 
             // ********** MOVING **********
             // tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
-            
-            if (currPath.isEmpty() && off == 0) {
+            if (currentLoc.equals(targetLocation)) {
+            	System.out.println("On Target Location!");
+            }
+            else {
+            	if (currPath.isEmpty()) {
             	AstarPathing ap = new AstarPathing(globalMap, currentLoc, targetLocation);
             	currPath = ap.findPath();
-            }
-            else if (off == 1){
+            	}
+            	else {
             	//System.out.println("Stack Size" + currPath.size());
-            	for (int i = currPath.size() - 1; i > 0; i--) {
-            		//System.out.println(currPath.get(i));
-            		Thread.sleep(1500);
-            		out.println("MOVE " + currPath.get(i));
+            	//System.out.println(currPath.get(i));
+            	move(currPath.pop());
+            	Thread.sleep(900);	
             	}
             }
-            off += 1;
+            
             
             // another call for current location
             out.println("LOC");

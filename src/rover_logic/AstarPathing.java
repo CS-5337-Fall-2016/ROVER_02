@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
+
 import common.Coord;
 import common.MapTile;
+import enums.Direction;
 import enums.Terrain;
 import rover_logic.NodeA;
 
@@ -27,16 +30,18 @@ public class AstarPathing {
 
 	}
 
-	public List<String> findPath() {
+	public Stack<Direction> findPath() {
+		System.out.println("A* Pathfinding In Progess...");
 		double moveCost = 0;
 		this.openList.add(this.currLOC);
 		while (!(this.openList.isEmpty())) {
 			moveCost += 1;
 			this.currLOC = findLowestCost(this.openList);
-			System.out.println("Add" + currLOC.getCoord().toString() + currLOC.getScore());
+			//System.out.println("Add" + currLOC.getCoord().toString() + currLOC.getScore());
 			this.openList.remove(this.currLOC);
 			this.closedList.add(this.currLOC);
 			if (this.currLOC.equals(this.target)) {
+				System.out.println("A* Pathfinding: Path created!");
 				return createPath(this.currLOC);
 			}
 			List<NodeA> adjList = this.getAdjacentCoordinates(this.currLOC, moveCost);
@@ -113,11 +118,11 @@ public class AstarPathing {
 
 	}
 
-	public List<String> createPath(NodeA dest) {
-		List<String> path = new ArrayList<String>();
+	public Stack<Direction> createPath(NodeA dest) {
+		Stack<Direction> path = new Stack<Direction>();
 		NodeA currNode = dest;
 		while (!currNode.equals(startLOC)) {
-			path.add(currNode.getDirection());
+			path.push(currNode.getDirection());
 			currNode = currNode.getParent();
 			//System.out.println("Moving Backwards" + currNode.getCoord().toString());
 		}

@@ -67,7 +67,7 @@ public class NodeA implements Comparable<NodeA> {
 		return 0;
 	}
 	
-	public String getDirection() {
+	public Direction getDirection() {
 		int xpos = this.coord.xpos - this.parent.getCoord().xpos;
 		int ypos = this.coord.ypos - this.parent.getCoord().ypos;
 		int[] diff = {xpos, ypos};
@@ -76,16 +76,16 @@ public class NodeA implements Comparable<NodeA> {
 		int[] E = {1, 0};
 		int[] W = {-1, 0};
 		if (Arrays.equals(diff, N)) {
-			return "N";
+			return Direction.NORTH;
 		}
 		else if(Arrays.equals(diff, S)) {
-			return "S";
+			return Direction.SOUTH;
 		}
 		else if(Arrays.equals(diff, E)) {
-			return "E";
+			return Direction.EAST;
 		}
 		else if(Arrays.equals(diff, W)) {
-			return "W";
+			return Direction.WEST;
 		}
 		else {
 			return null;

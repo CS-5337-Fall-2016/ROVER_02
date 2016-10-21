@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.json.simple.JSONArray;
@@ -51,6 +53,7 @@ public class ROVER_02 {
     HashSet<Coord> science_collection = new HashSet<Coord>(); //Science collected by the rover and the coords of extraction
     Stack<Direction> currPath = new Stack<Direction>();
     public static Map<Coord, MapTile> globalMap;
+    public static Set<Coord> traveled = new HashSet<Coord>();
     List<Coord> destinations;
     long trafficCounter;
     List<Socket> sockets = new ArrayList<Socket>();
@@ -162,11 +165,11 @@ public class ROVER_02 {
         
         boolean beenToJackpot = false;
         boolean ranSweep = false;
-
+        int moveCounter = 0;
+        Direction currD = Direction.NORTH;
         long startTime;
         long estimatedTime;
         long sleepTime2;
-        int off = 0;
         
         
         // start Rover controller process
@@ -219,22 +222,42 @@ public class ROVER_02 {
 
             // ********** MOVING **********
             // tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
-            if (currentLoc.equals(targetLocation)) {
-            	System.out.println("On Target Location!");
+            
+//         // *************** A* Pathfinding ***************
+//            if (currentLoc.equals(targetLocation)) {
+//            	System.out.println("On Target Location!");
+//            }
+//            else {
+//            	if (currPath.isEmpty()) {
+//            	AstarPathing ap = new AstarPathing(globalMap, currentLoc, targetLocation);
+//            	currPath = ap.findPath();
+//            	}
+//            	else {
+//            	//System.out.println("Stack Size" + currPath.size());
+//            	//System.out.println(currPath.get(i));
+//            	move(currPath.pop());
+//            	Thread.sleep(900);	
+//            	}
+//            }
+            // *************** Mapping Method ***************
+            System.out.println((!isNextBlock(Direction.EAST, scanMapTiles, centerIndex)) && (!checkSet(new Coord(centerIndex + 1, centerIndex))));
+            if ( (!isNextBlock(Direction.EAST, scanMapTiles, centerIndex)) && (!checkSet(new Coord(centerIndex + 1, centerIndex))) ) {
+            	//System.out.println("Size of HashMap" + traveled.size());
+            	traveled.add(new Coord(centerIndex + 1, centerIndex));
+            	move(Direction.EAST);
+            }
+            else if ( (!isNextBlock(Direction.NORTH, scanMapTiles, centerIndex)) && (!checkSet(new Coord(centerIndex, centerIndex - 1))) ) {
+            	traveled.add(new Coord(centerIndex, centerIndex - 1));
+            	move(Direction.NORTH);
+            }
+            else if ((!isNextBlock(Direction.WEST, scanMapTiles, centerIndex)) && (!checkSet(new Coord(centerIndex - 1, centerIndex)))) {
+            	traveled.add(new Coord(centerIndex - 1, centerIndex));
+            	move(Direction.WEST);
             }
             else {
-            	if (currPath.isEmpty()) {
-            	AstarPathing ap = new AstarPathing(globalMap, currentLoc, targetLocation);
-            	currPath = ap.findPath();
-            	}
-            	else {
-            	//System.out.println("Stack Size" + currPath.size());
-            	//System.out.println(currPath.get(i));
-            	move(currPath.pop());
-            	Thread.sleep(900);	
-            	}
+            	traveled.add(new Coord(centerIndex, centerIndex + 1));
+            	move(Direction.SOUTH);
             }
-            
             
             // another call for current location
             out.println("LOC");
@@ -468,6 +491,20 @@ public class ROVER_02 {
             out.println("MOVE E");
             break;
         }
+    }
+    
+    private boolean checkSet(Coord c) {
+    	if (traveled.isEmpty()) {
+    		return false;
+    	}
+    	for(Iterator<Coord> i = traveled.iterator(); i.hasNext(); ) {
+    	     Coord item = (Coord)i.next();
+    	     if (item.xpos == c.xpos && item.ypos == c.ypos) {
+    	    	 return true;
+    	     }
+    	}
+    	System.out.println("loop ended");
+    	return false;
     }
 
 

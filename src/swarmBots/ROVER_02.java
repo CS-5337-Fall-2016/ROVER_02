@@ -30,7 +30,7 @@ import enums.Terrain;
  */
 
 public class ROVER_02 {
-//my project
+
     BufferedReader in;
     PrintWriter out;
     String rovername;
@@ -42,11 +42,11 @@ public class ROVER_02 {
     private int xTile = 50;
     private int yTile = 50;
 
-    Direction currentDirection = Direction.SOUTH;
+    Direction currentDirection = Direction.EAST;
     Coord cc = null;
     HashSet<Coord> science_collection = new HashSet<Coord>();
     HashSet<Coord> displayed_science = new HashSet<Coord>();
-   
+   // List<Link> blue = new ArrayList<Link>();
     List<Socket> sockets = new ArrayList<Socket>();
 
     // just means it did not change locations between requests, could be
@@ -127,7 +127,7 @@ public class ROVER_02 {
         // name
 
         // connect to all all the other rovers
-        
+       
 
         while (true) {
             String line = in.readLine();
@@ -191,7 +191,6 @@ public class ROVER_02 {
             // System.out.println("ROVER_02 sending SCAN request");
             this.doScan();
             scanMap.debugPrintMap();
-this.Gather();
 
             // ***** MOVING *****
 
@@ -210,7 +209,17 @@ this.Gather();
 
             // ***********************************************************
             
-         
+          move(Direction.SOUTH);
+          if(Terrain.ROCK != null && Terrain.SAND !=null)
+        	  move(Direction.EAST);
+//          else
+//        	  move(Direction.WEST);
+//              move(Direction.SOUTH);
+//              for(int xTile = 0; xTile<=7 ; xTile++){
+//            	  move(Direction.NORTH);
+//              }
+//        
+              move(Direction.NORTH);
               
 
             // ***************************************************
@@ -247,11 +256,7 @@ this.Gather();
     }
 
     // ################ Support Methods ###########################
-public void Gather(){
-	 out.println("GATHER");
-	
-	
-}
+
     private void clearReadLineBuffer() throws IOException {
         while (in.ready()) {
             // System.out.println("ROVER_02 clearing readLine()");
@@ -350,11 +355,10 @@ public void Gather(){
         sStr = sStr.substring(4);
         if (sStr.lastIndexOf(" ") != -1) {
             String xStr = sStr.substring(0, sStr.lastIndexOf(" "));
-             System.out.println("extracted xStr " + xStr);
+            // System.out.println("extracted xStr " + xStr);
 
             String yStr = sStr.substring(sStr.lastIndexOf(" ") + 1);
-            System.out.println("extracted yStr " + yStr);
-            
+            // System.out.println("extracted yStr " + yStr);
             return new Coord(Integer.parseInt(xStr), Integer.parseInt(yStr));
         }
         return null;
@@ -381,7 +385,7 @@ public void Gather(){
 
     /** determine if the rover is on ROCK NONE OR SAND */
     private boolean isBlocked(MapTile tile) {
-        List<Terrain> blockers = Arrays.asList(Terrain.NONE,
+        List<Terrain> blockers = Arrays.asList(Terrain.ROCK, Terrain.NONE,
                 Terrain.SAND);
         Terrain terrain = tile.getTerrain();
         return tile.getHasRover() || blockers.contains(terrain);
@@ -519,8 +523,6 @@ public void Gather(){
                     }
                 displayed_science.add(c);
             }
-            System.out.println("Minerals located at");
-            System.out.println("x cord"+c.xpos); System.out.println("y cord"+c.ypos);
         }
     }
 
@@ -534,7 +536,7 @@ public void Gather(){
             new ROVER_02().run();
         } else {
             System.out.println(2);
-            new ROVER_02("localhost").run();
+            new ROVER_02(args[0]).run();
         }
     }
 

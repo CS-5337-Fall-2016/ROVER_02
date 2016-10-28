@@ -166,7 +166,10 @@ public class ROVER_02 {
         boolean beenToJackpot = false;
         boolean ranSweep = false;
         int moveCounter = 0;
-        Direction currD = Direction.NORTH;
+        Direction currF = Direction.NORTH;
+        Direction currB = Direction.SOUTH;
+        Direction currR = Direction.EAST;
+        Direction currL = Direction.WEST;
         long startTime;
         long estimatedTime;
         long sleepTime2;
@@ -240,23 +243,30 @@ public class ROVER_02 {
 //            	}
 //            }
             // *************** Mapping Method ***************
-            System.out.println((!isNextBlock(Direction.EAST, scanMapTiles, centerIndex)) && (!checkSet(new Coord(centerIndex + 1, centerIndex))));
-            if ( (!isNextBlock(Direction.EAST, scanMapTiles, centerIndex)) && (!checkSet(new Coord(centerIndex + 1, centerIndex))) ) {
-            	//System.out.println("Size of HashMap" + traveled.size());
-            	traveled.add(new Coord(centerIndex + 1, centerIndex));
-            	move(Direction.EAST);
+            
+            if ((!isNextBlock(currR, scanMapTiles, centerIndex)) && (!traveled.contains(new Coord(currentLoc.xpos + 1, currentLoc.ypos)))) {
+            	traveled.add(new Coord(currentLoc.xpos + 1, currentLoc.xpos));
+            	move(currR);
+            	Thread.sleep(900);
             }
-            else if ( (!isNextBlock(Direction.NORTH, scanMapTiles, centerIndex)) && (!checkSet(new Coord(centerIndex, centerIndex - 1))) ) {
-            	traveled.add(new Coord(centerIndex, centerIndex - 1));
-            	move(Direction.NORTH);
+            else if ((!isNextBlock(currF, scanMapTiles, centerIndex)) && (!traveled.contains(new Coord(currentLoc.xpos, currentLoc.ypos - 1)))){
+            	traveled.add(new Coord(currentLoc.xpos, currentLoc.ypos - 1));
+            	move(currF);
+            	Thread.sleep(900);
             }
-            else if ((!isNextBlock(Direction.WEST, scanMapTiles, centerIndex)) && (!checkSet(new Coord(centerIndex - 1, centerIndex)))) {
-            	traveled.add(new Coord(centerIndex - 1, centerIndex));
-            	move(Direction.WEST);
+            else if ((!isNextBlock(currL, scanMapTiles, centerIndex)) && (!traveled.contains(new Coord(currentLoc.xpos - 1, currentLoc.ypos)))) {
+            	traveled.add(new Coord(currentLoc.xpos - 1, currentLoc.ypos));
+            	move(currL);
+            	Thread.sleep(900);
+            	currF = Direction.WEST;
+                currB = Direction.EAST;
+                currR = Direction.NORTH;
+                currL = Direction.SOUTH;
             }
             else {
-            	traveled.add(new Coord(centerIndex, centerIndex + 1));
+            	traveled.add(new Coord(currentLoc.xpos, currentLoc.ypos + 1));
             	move(Direction.SOUTH);
+            	Thread.sleep(900);
             }
             
             // another call for current location
@@ -467,7 +477,7 @@ public class ROVER_02 {
         }
     }
 
-    /** determine if the rover is on ROCK NONE OR SAND */
+    /** determine if the rover is on NONE OR SAND */
     private boolean isBlocked(MapTile tile) {
         List<Terrain> blockers = Arrays.asList(Terrain.NONE,
                 Terrain.SAND);

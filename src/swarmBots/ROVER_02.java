@@ -53,7 +53,6 @@ public class ROVER_02 {
     HashSet<Coord> science_collection = new HashSet<Coord>(); //Science collected by the rover and the coords of extraction
     Stack<Direction> currPath = new Stack<Direction>();
     public static Map<Coord, MapTile> globalMap;
-    public static Set<Coord> traveled = new HashSet<Coord>();
     List<Coord> destinations;
     long trafficCounter;
     List<Socket> sockets = new ArrayList<Socket>();
@@ -165,11 +164,11 @@ public class ROVER_02 {
         
         boolean beenToJackpot = false;
         boolean ranSweep = false;
-        int moveCounter = 0;
         Direction currF = Direction.NORTH;
         Direction currB = Direction.SOUTH;
         Direction currR = Direction.EAST;
         Direction currL = Direction.WEST;
+        int dirCounter = 0;
         long startTime;
         long estimatedTime;
         long sleepTime2;
@@ -243,32 +242,51 @@ public class ROVER_02 {
 //            	}
 //            }
             // *************** Mapping Method ***************
-            
-            if ((!isNextBlock(currR, scanMapTiles, centerIndex)) && (!traveled.contains(new Coord(currentLoc.xpos + 1, currentLoc.ypos)))) {
-            	traveled.add(new Coord(currentLoc.xpos + 1, currentLoc.xpos));
-            	move(currR);
-            	Thread.sleep(900);
+            if (dirCounter != 0) {
+            	if (!isNextBlock(currR, scanMapTiles, centerIndex)) {
+            		dirCounter += 1;
+            		move(currR);
+            		Thread.sleep(900);
+            		Direction tempCurrF = currR;
+                	Direction tempCurrB = currL;
+                	Direction tempCurrR = currB;
+                	Direction tempCurrL = currF;
+                	currF = tempCurrF;
+                    currB = tempCurrB;
+                    currR = tempCurrR;
+                    currL = tempCurrL;
+            	}
+            	else if (isNextBlock(currR, scanMapTiles, centerIndex) && (!isNextBlock(currF, scanMapTiles, centerIndex))) {
+            		move(currF);
+            		Thread.sleep(900);
+            	}
+            	else if(isNextBlock(currF, scanMapTiles, centerIndex) && isNextBlock(currR, scanMapTiles, centerIndex)) {
+            		dirCounter -= 1;
+            		Direction tempCurrF = currL;
+                	Direction tempCurrB = currR;
+                	Direction tempCurrR = currF;
+                	Direction tempCurrL = currB;
+                	currF = tempCurrF;
+                    currB = tempCurrB;
+                    currR = tempCurrR;
+                    currL = tempCurrL;
+            	}
             }
-            else if ((!isNextBlock(currF, scanMapTiles, centerIndex)) && (!traveled.contains(new Coord(currentLoc.xpos, currentLoc.ypos - 1)))){
-            	traveled.add(new Coord(currentLoc.xpos, currentLoc.ypos - 1));
+            if (!isNextBlock(currF, scanMapTiles, centerIndex)) {
             	move(currF);
             	Thread.sleep(900);
             }
-            else if ((!isNextBlock(currL, scanMapTiles, centerIndex)) && (!traveled.contains(new Coord(currentLoc.xpos - 1, currentLoc.ypos)))) {
-            	traveled.add(new Coord(currentLoc.xpos - 1, currentLoc.ypos));
-            	move(currL);
-            	Thread.sleep(900);
-            	currF = Direction.WEST;
-                currB = Direction.EAST;
-                currR = Direction.NORTH;
-                currL = Direction.SOUTH;
-            }
             else {
-            	traveled.add(new Coord(currentLoc.xpos, currentLoc.ypos + 1));
-            	move(Direction.SOUTH);
-            	Thread.sleep(900);
+            	dirCounter -= 1;
+        		Direction tempCurrF = currL;
+            	Direction tempCurrB = currR;
+            	Direction tempCurrR = currF;
+            	Direction tempCurrL = currB;
+            	currF = tempCurrF;
+                currB = tempCurrB;
+                currR = tempCurrR;
+                currL = tempCurrL;
             }
-            
             // another call for current location
             out.println("LOC");
             line = in.readLine();
@@ -503,18 +521,19 @@ public class ROVER_02 {
         }
     }
     
-    private boolean checkSet(Coord c) {
-    	if (traveled.isEmpty()) {
-    		return false;
+    private Coord createCoordNeigh(Direction d, Coord curr) {
+    	if (d.equals(Direction.NORTH)){
+    		return new Coord(curr.xpos, curr.ypos - 1);
     	}
-    	for(Iterator<Coord> i = traveled.iterator(); i.hasNext(); ) {
-    	     Coord item = (Coord)i.next();
-    	     if (item.xpos == c.xpos && item.ypos == c.ypos) {
-    	    	 return true;
-    	     }
+    	else if (d.equals(Direction.SOUTH)) {
+    		return new Coord(curr.xpos, curr.ypos + 1);
     	}
-    	System.out.println("loop ended");
-    	return false;
+    	else if (d.equals(Direction.EAST)) {
+    		return new Coord(curr.xpos + 1, curr.ypos);
+    	}
+    	else { //Direction is West
+    		return new Coord(curr.xpos - 1, curr.ypos);
+    	}
     }
 
 

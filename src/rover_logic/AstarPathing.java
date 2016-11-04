@@ -40,6 +40,10 @@ public class AstarPathing {
 			//System.out.println("Add" + currLOC.getCoord().toString() + currLOC.getScore());
 			this.openList.remove(this.currLOC);
 			this.closedList.add(this.currLOC);
+			if (this.currLOC == null) {
+				System.out.println("No Path to Target Location!");
+				return null;
+			}
 			if (this.currLOC.equals(this.target)) {
 				System.out.println("A* Pathfinding: Path created!");
 				return createPath(this.currLOC);
@@ -73,17 +77,17 @@ public class AstarPathing {
 		Coord e = new Coord(east, curr.ypos); // E
 		Coord w = new Coord(west, curr.ypos); // W
 		Coord n = new Coord(curr.xpos, north); // N
-
-		if (!(this.isBlocked(s))) {
+		
+		if ((!this.isBlocked(s)) && !(globalMap.get(s) == null)) {
 			adjList.add(new NodeA(s, createScore(s) + add));
 		}
-		if (!(this.isBlocked(e))) {
+		if ((!this.isBlocked(e)) && !(globalMap.get(e) == null)) {
 			adjList.add(new NodeA(e, createScore(e) + add));
 		}
-		if (!(this.isBlocked(w))) {
+		if ((!this.isBlocked(w)) && !(globalMap.get(w) == null)) {
 			adjList.add(new NodeA(w, createScore(w) + add));
 		}
-		if (!(this.isBlocked(n))) {
+		if ((!this.isBlocked(n)) && !(globalMap.get(n) == null)) {
 			adjList.add(new NodeA(n, createScore(n) + add));
 		}
 		return adjList;
@@ -96,7 +100,12 @@ public class AstarPathing {
 				lowNode = nodeList.get(i);
 			}
 		}
-		return lowNode;
+		if (globalMap.get(lowNode.getCoord()) == null) {
+			return lowNode;
+		}
+		else {
+			return null;
+		}
 	}
 
 	public double createScore(Coord c) {

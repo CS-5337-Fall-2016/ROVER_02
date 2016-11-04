@@ -169,6 +169,7 @@ public class ROVER_02 {
         Direction currR = Direction.EAST;
         Direction currL = Direction.WEST;
         int dirCounter = 0;
+        int pa = 0;
         long startTime;
         long estimatedTime;
         long sleepTime2;
@@ -225,43 +226,74 @@ public class ROVER_02 {
             // ********** MOVING **********
             // tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
             
-//         // *************** A* Pathfinding ***************
-//            if (currentLoc.equals(targetLocation)) {
-//            	System.out.println("On Target Location!");
-//            }
-//            else {
-//            	if (currPath.isEmpty()) {
-//            	AstarPathing ap = new AstarPathing(globalMap, currentLoc, targetLocation);
-//            	currPath = ap.findPath();
-//            	}
-//            	else {
-//            	//System.out.println("Stack Size" + currPath.size());
-//            	//System.out.println(currPath.get(i));
-//            	move(currPath.pop());
-//            	Thread.sleep(900);	
-//            	}
-//            }
-            // *************** Mapping Method ***************
-            if (dirCounter != 0) {
-            	if (!isNextBlock(currR, scanMapTiles, centerIndex)) {
-            		dirCounter += 1;
-            		move(currR);
-            		Thread.sleep(900);
-            		Direction tempCurrF = currR;
-                	Direction tempCurrB = currL;
-                	Direction tempCurrR = currB;
-                	Direction tempCurrL = currF;
-                	currF = tempCurrF;
-                    currB = tempCurrB;
-                    currR = tempCurrR;
-                    currL = tempCurrL;
-            	}
-            	else if (isNextBlock(currR, scanMapTiles, centerIndex) && (!isNextBlock(currF, scanMapTiles, centerIndex))) {
-            		move(currF);
-            		Thread.sleep(900);
-            	}
-            	else if(isNextBlock(currF, scanMapTiles, centerIndex) && isNextBlock(currR, scanMapTiles, centerIndex)) {
-            		dirCounter -= 1;
+            // *************** A* Pathfinding ***************
+            System.out.println("Target Location: (" + targetLocation.xpos + ", " + targetLocation.ypos + ")");
+            if (!(targetLocation == null)) {
+            	if (currentLoc.equals(targetLocation)) {
+            	System.out.println("On Target Location!");
+	            }
+	            else {
+	            	if (currPath == null) {
+	            		AstarPathing ap = new AstarPathing(globalMap, currentLoc, targetLocation);
+	            		currPath = ap.findPath();
+	            		if (currPath == null) {
+	            			pa = 1;
+	            		}
+	            	}
+	            	else if (currPath.isEmpty()) {
+	            		AstarPathing ap = new AstarPathing(globalMap, currentLoc, targetLocation);
+		            	currPath = ap.findPath();
+		            	if (currPath == null) {
+	            			pa = 1;
+	            		}
+	            	}
+	            	else {
+	            		//System.out.println("Stack Size" + currPath.size());
+	            		//System.out.println(currPath.get(i));
+	            		move(currPath.pop());
+	            		Thread.sleep(900);	
+	            	}
+	            }
+            }
+            
+            // *************** Pledge's Algorithm ***************
+            if (pa == 1) {
+            	if (dirCounter != 0) {
+                	if (!isNextBlock(currR, scanMapTiles, centerIndex)) {
+                		dirCounter += 1;
+                		move(currR);
+                		Thread.sleep(900);
+                		Direction tempCurrF = currR;
+                    	Direction tempCurrB = currL;
+                    	Direction tempCurrR = currB;
+                    	Direction tempCurrL = currF;
+                    	currF = tempCurrF;
+                        currB = tempCurrB;
+                        currR = tempCurrR;
+                        currL = tempCurrL;
+                	}
+                	else if (isNextBlock(currR, scanMapTiles, centerIndex) && (!isNextBlock(currF, scanMapTiles, centerIndex))) {
+                		move(currF);
+                		Thread.sleep(900);
+                	}
+                	else if(isNextBlock(currF, scanMapTiles, centerIndex) && isNextBlock(currR, scanMapTiles, centerIndex)) {
+                		dirCounter -= 1;
+                		Direction tempCurrF = currL;
+                    	Direction tempCurrB = currR;
+                    	Direction tempCurrR = currF;
+                    	Direction tempCurrL = currB;
+                    	currF = tempCurrF;
+                        currB = tempCurrB;
+                        currR = tempCurrR;
+                        currL = tempCurrL;
+                	}
+                }
+                if (!isNextBlock(currF, scanMapTiles, centerIndex)) {
+                	move(currF);
+                	Thread.sleep(900);
+                }
+                else {
+                	dirCounter -= 1;
             		Direction tempCurrF = currL;
                 	Direction tempCurrB = currR;
                 	Direction tempCurrR = currF;
@@ -270,23 +302,10 @@ public class ROVER_02 {
                     currB = tempCurrB;
                     currR = tempCurrR;
                     currL = tempCurrL;
-            	}
+                }
             }
-            if (!isNextBlock(currF, scanMapTiles, centerIndex)) {
-            	move(currF);
-            	Thread.sleep(900);
-            }
-            else {
-            	dirCounter -= 1;
-        		Direction tempCurrF = currL;
-            	Direction tempCurrB = currR;
-            	Direction tempCurrR = currF;
-            	Direction tempCurrL = currB;
-            	currF = tempCurrF;
-                currB = tempCurrB;
-                currR = tempCurrR;
-                currL = tempCurrL;
-            }
+            pa = 0;
+            
             // another call for current location
             out.println("LOC");
             line = in.readLine();

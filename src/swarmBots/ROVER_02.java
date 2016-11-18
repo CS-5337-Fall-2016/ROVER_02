@@ -153,10 +153,10 @@ public class ROVER_02 {
         }
         System.out.println(rovername + " TARGET_LOC " + targetLocation);
         
-        // ******* destination *******
+        // **************************** destination **************************************
         // TODO: Sort destination depending on current Location
         
-        // ******** Communication ********
+        // *************************** Communication **************************************
         String url = "http://localhost:3000/api";
         String corp_secret = "gz5YhL70a2";
             
@@ -223,10 +223,10 @@ public class ROVER_02 {
             }
             trafficCounter++;
 
-            // ********** MOVING **********
+            // **************************** MOVING LOGIC ***********************************
             // tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
             
-            // *************** A* Pathfinding ***************
+            // **************************** A* Pathfinding ********************************* TODO: Use a thread to have A* run concurrently with the rover
             System.out.println("Target Location: (" + targetLocation.xpos + ", " + targetLocation.ypos + ")");
             if (!(targetLocation == null)) {
             	if (currentLoc.equals(targetLocation)) {
@@ -256,7 +256,7 @@ public class ROVER_02 {
 	            }
             }
             
-            // *************** Pledge's Algorithm ***************
+            // *************** Pledge's Algorithm *************** TODO: Make a separate class for Pledge's Algorithm
             if (pa == 1) {
             	if (dirCounter != 0) {
                 	if (!isNextBlock(currR, scanMapTiles, centerIndex)) {
@@ -336,6 +336,7 @@ public class ROVER_02 {
         }
 
     }
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Various Methods >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     
     private void updateglobalMap(Coord currentLoc, MapTile[][] scanMapTiles) {
         int centerIndex = (scanMap.getEdgeSize() - 1) / 2;
@@ -495,7 +496,7 @@ public class ROVER_02 {
         return null;
     }
 
-    /** determine if the rover is about to reach a "blocked" tile */
+    // determines if the rover is about to reach a "blocked" tile
     public boolean isNextBlock(Direction direction, MapTile[][] scanMapTiles,
             int centerIndex) {
 
@@ -514,7 +515,7 @@ public class ROVER_02 {
         }
     }
 
-    /** determine if the rover is on NONE OR SAND */
+    // determines if the maptile is NONE OR SAND
     private boolean isBlocked(MapTile tile) {
         List<Terrain> blockers = Arrays.asList(Terrain.NONE,
                 Terrain.SAND);
@@ -522,7 +523,7 @@ public class ROVER_02 {
         return tile.getHasRover() || blockers.contains(terrain);
     }
 
-    /** move the rover one tile */
+    // moves the rover one tile in the given direction
     private void move(Direction direction) {
         switch (direction) {
         case NORTH:
@@ -540,56 +541,7 @@ public class ROVER_02 {
         }
     }
     
-    private Coord createCoordNeigh(Direction d, Coord curr) {
-    	if (d.equals(Direction.NORTH)){
-    		return new Coord(curr.xpos, curr.ypos - 1);
-    	}
-    	else if (d.equals(Direction.SOUTH)) {
-    		return new Coord(curr.xpos, curr.ypos + 1);
-    	}
-    	else if (d.equals(Direction.EAST)) {
-    		return new Coord(curr.xpos + 1, curr.ypos);
-    	}
-    	else { //Direction is West
-    		return new Coord(curr.xpos - 1, curr.ypos);
-    	}
-    }
-
-
-    /** the rover move logic */
-    private void masterMove(Direction direction, MapTile[][] scanMapTiles,
-            int centerIndex) {
-       
-    }
-
-    /**
-     * determine if the rover is about to reach a "NONE" tile. use to indicate
-     * that you've reach the edge of the map and may need to change
-     * direction
-     */
-    private boolean isNextEdge(Direction direction, MapTile[][] scanMapTiles,
-            int centerIndex) {
-
-        switch (direction) {
-        case NORTH:
-            return isNone(scanMapTiles[centerIndex][centerIndex - 1]);
-        case SOUTH:
-            return isNone(scanMapTiles[centerIndex][centerIndex + 1]);
-        case WEST:
-            return isNone(scanMapTiles[centerIndex - 1][centerIndex]);
-        case EAST:
-            return isNone(scanMapTiles[centerIndex + 1][centerIndex]);
-        default:
-            // this code should be unreachable
-            return false;
-        }
-    }
-
-    /** determine if the tile is NONE */
-    private boolean isNone(MapTile tile) {
-        return tile.getTerrain() == Terrain.NONE;
-    }
-    
+    // extracts the coordinate from the given string
     public static Coord extractLocationFromString(String sStr) {
         int indexOf;
         indexOf = sStr.indexOf(" ");
@@ -605,10 +557,7 @@ public class ROVER_02 {
         return null;
     }
 
-    /**
-     * Runs the client
-     */
-
+    // main method that runs the rover
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
             System.out.println(1);

@@ -82,7 +82,7 @@ public class ROVER_02 {
     }
 
     public ROVER_02(String serverAddress) {
-    	// constructor
+    	// constructor with String input of the server address
         System.out.println("ROVER_02 rover object constructed");
         rovername = "ROVER_02";
         SERVER_ADDRESS = serverAddress;
@@ -117,7 +117,7 @@ public class ROVER_02 {
             }
         }
 
-        // ******** Rover logic *********
+        // ******************************* Logic Variables ************************************************
         // int cnt=0;
         String line = "";
 
@@ -135,7 +135,7 @@ public class ROVER_02 {
         Coord rovergroupStartPosition = null;
         Coord targetLocation = null;
         
-        // **** Request START_LOC Location from SwarmServer ****
+        // *********************** Request START_LOC Location from SwarmServer ************************
         out.println("START_LOC");
         line = in.readLine();
         if (line == null) {
@@ -148,7 +148,7 @@ public class ROVER_02 {
         System.out.println(rovername + " START_LOC " + rovergroupStartPosition);
 
       
-        // **** Request TARGET_LOC Location from SwarmServer ****
+        // *********************** Request TARGET_LOC Location from SwarmServer ***********************
         out.println("TARGET_LOC");
         line = in.readLine();
         if (line == null) {
@@ -176,14 +176,14 @@ public class ROVER_02 {
         long sleepTime2;
         
         
-        // start Rover controller process
+        // ************************* start Rover controller process *********************************
         while (true) {
         	
         	startTime = System.nanoTime();
             // after getting location set previous equal current to be able to
             // check for stuckness and blocked later
         	
-        	// **** location call ****
+        	// ******************** location call **********************
             out.println("LOC");
             line = in.readLine();
             if (line == null) {
@@ -206,7 +206,7 @@ public class ROVER_02 {
             System.out.println(rovername + " equipment list results " + equipment + "\n");
 
             
-            // ***** do a SCAN *****
+            // *********************** do a SCAN *******************************
             // System.out.println("ROVER_02 sending SCAN request");
             this.doScan();
             scanMap.debugPrintMap();
@@ -216,7 +216,7 @@ public class ROVER_02 {
             int centerIndex = (scanMap.getEdgeSize() - 1) / 2;
             updateglobalMap(currentLoc, scanMapTiles);
             
-            //***** communicating with the server
+            //*************** communicating with the server
             System.out.println("post message: " + com.postScanMapTiles(currentLoc, scanMapTiles));
             if (trafficCounter % 5 == 0) {
                 updateglobalMap(com.getGlobalMap());
@@ -227,19 +227,22 @@ public class ROVER_02 {
             for (Map.Entry<Coord, MapTile> entry : globalMap.entrySet()) {
                 Coord key = entry.getKey();
                 MapTile value = entry.getValue();
-                System.out.println("Scanning For Destinations...");
-                if (value.getScience() == Science.CRYSTAL ||value.getScience() == Science.MINERAL ||
+                //System.out.println("Scanning For Destinations...");
+                if (!isBlocked(value)) {
+                	if (value.getScience() == Science.CRYSTAL ||value.getScience() == Science.MINERAL ||
                 		value.getScience() == Science.RADIOACTIVE || value.getScience() == Science.ORGANIC) {
                 	destinations.add(key);
+                	}
                 }
-
             }
             
 
-            // **************************** MOVING LOGIC ***********************************
-            // tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
+            // ***************************************** MOVING LOGIC ***********************************************
+            // Note: tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
+            // Note: walker delay is 900 
             
-            // **************************** A* Pathfinding ********************************* TODO: Use a thread to have A* run concurrently with the rover
+            // **************************** A* Pathfinding ********************************* 
+            //TODO: Use a thread to have A* run concurrently with the rover
             System.out.println("Target Location: (" + targetLocation.xpos + ", " + targetLocation.ypos + ")");
             if (!(targetLocation == null)) {
             	if (currentLoc.equals(targetLocation)) {
@@ -269,7 +272,8 @@ public class ROVER_02 {
 	            }
             }
             
-            // *************** Pledge's Algorithm *************** TODO: Make a separate class for Pledge's Algorithm
+            // *************************************** Pledge's Algorithm ******************************* 
+            //TODO: Make a separate class for Pledge's Algorithm
             if (pa == 1) {
             	if (dirCounter != 0) {
                 	if (!isNextBlock(currR, scanMapTiles, centerIndex)) {
@@ -509,7 +513,7 @@ public class ROVER_02 {
         return null;
     }
 
-    // determines if the rover is about to reach a "blocked" tile
+    // determines if the rover is about to reach a "blocked" tile in all four directions
     public boolean isNextBlock(Direction direction, MapTile[][] scanMapTiles,
             int centerIndex) {
 

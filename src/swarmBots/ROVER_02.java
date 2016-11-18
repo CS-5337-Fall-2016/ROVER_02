@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -41,7 +42,7 @@ import supportTools.CommunicationHelper;
  */
 
 public class ROVER_02 {
-
+	
     BufferedReader in;
     PrintWriter out;
     String rovername;
@@ -49,6 +50,8 @@ public class ROVER_02 {
     int sleepTime;
     String SERVER_ADDRESS = "localhost";
     static final int PORT_ADDRESS = 9537;
+    String url = "http://localhost:3000/api";
+    String corp_secret = "gz5YhL70a2";
     
     HashSet<Coord> science_collection = new HashSet<Coord>(); //Science collected by the rover and the coords of extraction
     Stack<Direction> currPath = new Stack<Direction>();
@@ -56,6 +59,8 @@ public class ROVER_02 {
     List<Coord> destinations;
     long trafficCounter;
     List<Socket> sockets = new ArrayList<Socket>();
+    Communication com;
+    Iterator it;
 
     // just means it did not change locations between requests, could be
     // velocity limit or obstruction etc.
@@ -71,7 +76,8 @@ public class ROVER_02 {
         // this should be a safe but slow timer value
         sleepTime = 300; // in milliseconds - smaller is faster, but the server will cut connection if it is too small
         globalMap = new HashMap<>();
-        destinations = new ArrayList<>();
+        destinations = new ArrayList<>();   
+        com = new Communication(url, rovername, corp_secret);
 
     }
 
@@ -83,6 +89,7 @@ public class ROVER_02 {
         sleepTime = 300; // in milliseconds - smaller is faster, but the server will cut connection if it is too small
         globalMap = new HashMap<>();
         destinations = new ArrayList<>();
+        com = new Communication(url, rovername, corp_secret);
     }
     
     /**
@@ -153,14 +160,8 @@ public class ROVER_02 {
         }
         System.out.println(rovername + " TARGET_LOC " + targetLocation);
         
-        // **************************** destination **************************************
+        // **************************** Sort Destination List **************************************
         // TODO: Sort destination depending on current Location
-        
-        // *************************** Communication **************************************
-        String url = "http://localhost:3000/api";
-        String corp_secret = "gz5YhL70a2";
-            
-        Communication com = new Communication(url, rovername, corp_secret);
         
         boolean beenToJackpot = false;
         boolean ranSweep = false;
@@ -222,6 +223,18 @@ public class ROVER_02 {
 
             }
             trafficCounter++;
+            //***************************** Scan For Destinations ************************************
+            for (Map.Entry<Coord, MapTile> entry : globalMap.entrySet()) {
+                Coord key = entry.getKey();
+                MapTile value = entry.getValue();
+                System.out.println("Scanning For Destinations...");
+                if (value.getScience() == Science.CRYSTAL ||value.getScience() == Science.MINERAL ||
+                		value.getScience() == Science.RADIOACTIVE || value.getScience() == Science.ORGANIC) {
+                	destinations.add(key);
+                }
+
+            }
+            
 
             // **************************** MOVING LOGIC ***********************************
             // tile S = y + 1; N = y - 1; E = x + 1; W = x - 1
